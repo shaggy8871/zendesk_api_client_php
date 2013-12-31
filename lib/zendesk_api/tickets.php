@@ -23,7 +23,7 @@ class Tickets {
 	/*
 	 * Returns all recent tickets overall, per user or per organization
 	 */
-	public function all($params) {
+	public function all($params = array ()) {
 		$endPoint = ($params['organization_id'] ? 'organizations/'.$params['organization_id'].'/tickets' : 
 					($params['user_id'] ? 'users/'.$params['user_id'].'/tickets/'.($params['ccd'] ? 'ccd' : 'requested') : 'tickets/recent')).'.json';
 		$response = Http::send($this->client, $endPoint);
@@ -189,7 +189,7 @@ class Tickets {
 			$this->client->lastError = 'The ticket does not exist';
 			return false;
 		}
-		if ((!is_object($response)) || ($this->client->lastResponseCode != 200)) {
+		if ($this->client->lastResponseCode != 200) {
 			$this->client->lastError = 'Response to tickets->delete is not valid. See $client->lastResponseHeaders for details';
 			return false;
 		}
