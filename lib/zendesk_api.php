@@ -1,12 +1,15 @@
 <?php
 require_once ("lib/zendesk_api/http.php");
 require_once ("lib/zendesk_api/tickets.php");
+require_once ("lib/zendesk_api/attachments.php");
 
 class ZendeskAPI {
 
+	private $subdomain;
 	private $username;
-	private $token;
 	private $password;
+	private $token;
+	private $oAuthToken;
 	private $apiUrl;
 	private $apiVer = 'v2';
 	private $debug = false;
@@ -23,25 +26,41 @@ class ZendeskAPI {
 	 * Public objects
 	 */
 	public $tickets;
+	public $attachments;
 
 	public function __construct($subdomain, $username) {
+		$this->subdomain = $subdomain;
 		$this->username = $username;
 		$this->apiUrl = 'https://'.$subdomain.'.zendesk.com/api/'.$this->apiVer.'/';
 		$this->tickets = new Tickets($this);
+		$this->attachments = new Attachments($this);
 	}
 
 	/*
-	 * Call either setToken OR setPassword, but not both
+	 * Configure the authorization method
 	 */
-	public function setToken($token) {
-		$this->token = $token;
+	public function setAuth($method, $value) {
+		switch($method) {
+			case 'password':	$this->password = $value;
+								$this->token = '';
+								$this->oAuthToken = '';
+								break;
+			case 'token':		$this->password = '';
+								$this->token = $value;
+								$this->oAuthToken = '';
+								break;
+			case 'oauth_token':	$this->password = '';
+								$this->token = '';
+								$this->oAuthToken = $value;
+								break;
+		}
 	}
 
 	/*
-	 * Call either setToken OR setPassword, but not both
+	 * Returns the supplied subdomain
 	 */
-	public function setPassword($password) {
-		$this->password = $password;
+	public function getSubdomain() {
+		return $this->subdomain;
 	}
 
 	/*
@@ -52,10 +71,17 @@ class ZendeskAPI {
 	}
 
 	/*
-	 * Compiles an auth string with either token or password
+	 * Returns a text value indicating the type of authorization configured
 	 */
-	public function getAuthString() {
-		return $this->username.($this->token ? '/token:'.$this->token : ':'.$this->password);
+	public function getAuthType() {
+		return ($this->oAuthToken ? 'oauth_token' : ($this->token ? 'token' : 'password'));
+	}
+
+	/*
+	 * Compiles an auth string with either token, password or OAuth credentials
+	 */
+	public function getAuthText() {
+		return ($this->oAuthToken ? $this->oAuthToken : $this->username.($this->token ? '/token:'.$this->token : ':'.$this->password));
 	}
 
 	/*

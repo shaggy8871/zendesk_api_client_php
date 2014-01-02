@@ -7,8 +7,7 @@ $token = "6wiIBWbGkBMo1mRDMuVwkw1EPsNkeUj95PIz2akv"; // replace this with your t
 //$password = "123456";
 
 $client = new ZendeskAPI($subdomain, $username);
-$client->setToken($token); // set either token or password (not both)
-//$client->setPassword($password);
+$client->setAuth('token', $token); // set either token or password
 
 // Get all tickets
 $tickets = $client->tickets->all();

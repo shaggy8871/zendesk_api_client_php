@@ -10,16 +10,41 @@ class TicketsTest extends PHPUnit_Framework_TestCase {
 	private $client;
 	private $subdomain;
 	private $username;
+	private $password;
 	private $token;
+	private $oAuthToken;
 
 	public function __construct() {
 		$this->subdomain = $GLOBALS['SUBDOMAIN'];
-		$this->$username = $GLOBALS['USERNAME'];
-		$this->$token = $GLOBALS['TOKEN'];
+		$this->username = $GLOBALS['USERNAME'];
+		$this->password = $GLOBALS['PASSWORD'];
+		$this->token = $GLOBALS['TOKEN'];
+		$this->oAuthToken = $GLOBALS['OAUTH_TOKEN'];
 		$this->client = new ZendeskAPI($this->subdomain, $this->username);
-		$this->client->setToken($this->token);
+		$this->client->setAuth('token', $this->token);
 	}
 
+	public function testAuthPassword() {
+		$this->client->setAuth('password', $this->password);
+		$tickets = $this->client->tickets->all();
+		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
+	}
+
+	public function testAuthToken() {
+		$this->client->setAuth('token', $this->token);
+		$tickets = $this->client->tickets->all();
+		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
+	}
+
+	public function testAuthOAuth() {
+		$this->client->setAuth('oauth_token', $this->oAuthToken);
+		$tickets = $this->client->tickets->all();
+		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
+	}
+
+	/**
+	 * @depends testAuthToken
+	 */
 	public function testAll() {
 		$tickets = $this->client->tickets->all();
 		$this->assertEquals(is_object($tickets), true, 'Should return an object');
@@ -30,6 +55,9 @@ class TicketsTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
 	}
 
+	/**
+	 * @depends testAuthToken
+	 */
 	public function testFindSingle() {
 		$tickets = $this->client->tickets->find(array('id' => 2)); // ticket #2 must never be deleted
 		$this->assertEquals(is_object($tickets), true, 'Should return an object');
@@ -38,6 +66,9 @@ class TicketsTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
 	}
 
+	/**
+	 * @depends testAuthToken
+	 */
 	public function testFindMultiple() {
 		$tickets = $this->client->tickets->find(array('id' => array(2, 3)));
 		$this->assertEquals(is_object($tickets), true, 'Should return an object');
@@ -47,6 +78,9 @@ class TicketsTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
 	}
 
+	/**
+	 * @depends testAuthToken
+	 */
 	public function testCreate() {
 		$testTicket = array(
 			'subject' => 'The quick brown fox jumps over the lazy dog', 
@@ -102,6 +136,9 @@ class TicketsTest extends PHPUnit_Framework_TestCase {
 		return $stack;
 	}
 
+	/**
+	 * @depends testAuthToken
+	 */
 	public function testDeleteMultiple() {
 		// Assume testCreate works so we can go ahead and create two new tickets
 		$testTicket = array(
@@ -123,6 +160,38 @@ class TicketsTest extends PHPUnit_Framework_TestCase {
 		$this->client->tickets->delete(array('id' => array($ticket1->ticket->id, $ticket2->ticket->id)));
 		$this->assertEquals($this->client->lastError, '', 'Throws an error: '.$this->client->lastError);
 		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
+	}
+
+	/**
+	 * @depends testAuthToken
+	 */
+	public function testCreateWithAttachment() {
+		$attachment = $this->client->attachments->upload(array(
+			'file' => getcwd().'/test/unit/UK.png',
+			'type' => 'image/png'
+		));
+		$this->assertEquals($this->client->lastError, '', 'Throws an error: '.$this->client->lastError);
+		$this->assertEquals($this->client->lastResponseCode, '201', 'Does not return HTTP code 201');
+		$testTicket = array(
+			'subject' => 'The quick brown fox jumps over the lazy dog', 
+			'comment' => array (
+				'body' => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+				'uploads' => array ($attachment->upload->token)
+			), 
+			'priority' => 'normal'
+		);
+		$ticket = $this->client->tickets->create($testTicket);
+		$this->assertEquals(is_object($ticket), true, 'Should return an object');
+		$this->assertEquals(is_object($ticket->ticket), true, 'Should return an object called "ticket"');
+		$this->assertGreaterThan(0, $ticket->ticket->id, 'Returns a non-numeric id for ticket');
+		$this->assertEquals(is_array($ticket->audit->events), true, 'Should return an array called "audit->events"');
+		$this->assertEquals(is_array($ticket->audit->events[0]->attachments), true, 'Should return an array called "audit->events->attachments"');
+		$this->assertGreaterThan(0, count($ticket->audit->events[0]->attachments), 'Attachment count should be above zero');
+		$this->assertEquals($this->client->lastError, '', 'Create throws an error: '.$this->client->lastError);
+		$this->assertEquals($this->client->lastResponseCode, '201', 'Create does not return HTTP code 201');
+		$this->client->tickets->delete(array('id' => $ticket->ticket->id));
+		$this->assertEquals($this->client->lastError, '', 'Delete throws an error: '.$this->client->lastError);
+		$this->assertEquals($this->client->lastResponseCode, '200', 'Delete does not return HTTP code 200');
 	}
 
 }
