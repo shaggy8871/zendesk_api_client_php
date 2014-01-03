@@ -66,9 +66,9 @@ class Http {
 		curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode(array(
 			'grant_type' => 'authorization_code',
 			'code' => $code,
-		    'client_id' => $oAuthId,
+			'client_id' => $oAuthId,
 			'client_secret' => $oAuthSecret,
-		    'redirect_uri' => ($_SERVER['HTTPS'] ? 'https://' : 'http://').$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'],
+			'redirect_uri' => ($_SERVER['HTTPS'] ? 'https://' : 'http://').$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'],
 			'scope' => 'read'
 		)));
 		curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));

@@ -50,7 +50,7 @@ class TicketsTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(is_object($tickets), true, 'Should return an object');
 		$this->assertEquals(is_array($tickets->tickets), true, 'Should return an object containing an array called "tickets"');
 		$this->assertGreaterThan(0, $tickets->tickets[0]->id, 'Returns a non-numeric id in first ticket');
-		$this->assertContains($tickets->tickets[0]->priority, array ('low', 'normal', 'high', 'urgent'), 'Returns an invalid priority in first ticket');
+		$this->assertContains($tickets->tickets[0]->priority, array (null, 'low', 'normal', 'high', 'urgent'), 'Returns an invalid priority in first ticket');
 		$this->assertEquals($this->client->lastError, '', 'Throws an error: '.$this->client->lastError);
 		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
 	}
@@ -187,6 +187,25 @@ class TicketsTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(is_array($ticket->audit->events), true, 'Should return an array called "audit->events"');
 		$this->assertEquals(is_array($ticket->audit->events[0]->attachments), true, 'Should return an array called "audit->events->attachments"');
 		$this->assertGreaterThan(0, count($ticket->audit->events[0]->attachments), 'Attachment count should be above zero');
+		$this->assertEquals($this->client->lastError, '', 'Create throws an error: '.$this->client->lastError);
+		$this->assertEquals($this->client->lastResponseCode, '201', 'Create does not return HTTP code 201');
+		$this->client->tickets->delete(array('id' => $ticket->ticket->id));
+		$this->assertEquals($this->client->lastError, '', 'Delete throws an error: '.$this->client->lastError);
+		$this->assertEquals($this->client->lastResponseCode, '200', 'Delete does not return HTTP code 200');
+	}
+
+	/**
+	 * @depends testAuthToken
+	 */
+	public function testCreateFromTweet() {
+		$params = array(
+			'monitored_twitter_handle_id' => 20032352,
+			'twitter_status_message_id' => '419191717649473536' // need to change this
+		);
+		$ticket = $this->client->tickets->createFromTweet($params);
+		$this->assertEquals(is_object($ticket), true, 'Should return an object');
+		$this->assertEquals(is_object($ticket->ticket), true, 'Should return an object called "ticket"');
+		$this->assertGreaterThan(0, $ticket->ticket->id, 'Returns a non-numeric id for ticket');
 		$this->assertEquals($this->client->lastError, '', 'Create throws an error: '.$this->client->lastError);
 		$this->assertEquals($this->client->lastResponseCode, '201', 'Create does not return HTTP code 201');
 		$this->client->tickets->delete(array('id' => $ticket->ticket->id));

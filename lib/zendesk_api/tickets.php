@@ -86,13 +86,17 @@ class Tickets {
 	 */
 	public function createFromTweet($params) {
 		if((!$params['twitter_status_message_id']) || (!$params['monitored_twitter_handle_id'])) {
-			$this->client->lastError = 'No twitter_status_message_id or monitored_twitter_handle_id supplied for tickets->createFromTweet';
+			$this->client->lastError = 'Missing parameter: both \'twitter_status_message_id\' and \'monitored_twitter_handle_id\' must be supplied for tickets->createFromTweet';
 			return false;
 		}
 		$endPoint = 'channels/twitter/tickets.json';
 		$response = Http::send($this->client, $endPoint, array ('ticket' => $params), 'POST');
+		if ($this->client->lastResponseCode == 422) {
+			$this->client->lastError = 'Response to tickets->createFromTweet is not valid. See $client->lastResponseHeaders for details (hint: you can\'t create two tickets from the same tweet)';
+			return false;
+		}
 		if ((!is_object($response)) || ($this->client->lastResponseCode != 201)) {
-			$this->client->lastError = 'Response to tickets->create is not valid. See $client->lastResponseHeaders for details';
+			$this->client->lastError = 'Response to tickets->createFromTweet is not valid. See $client->lastResponseHeaders for details';
 			return false;
 		}
 		return $response;

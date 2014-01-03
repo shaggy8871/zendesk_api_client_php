@@ -2,6 +2,7 @@
 require_once ("lib/zendesk_api/http.php");
 require_once ("lib/zendesk_api/tickets.php");
 require_once ("lib/zendesk_api/attachments.php");
+require_once ("lib/zendesk_api/twitter.php");
 
 class ZendeskAPI {
 
@@ -27,6 +28,7 @@ class ZendeskAPI {
 	 */
 	public $tickets;
 	public $attachments;
+	public $twitter;
 
 	public function __construct($subdomain, $username) {
 		$this->subdomain = $subdomain;
@@ -34,6 +36,7 @@ class ZendeskAPI {
 		$this->apiUrl = 'https://'.$subdomain.'.zendesk.com/api/'.$this->apiVer.'/';
 		$this->tickets = new Tickets($this);
 		$this->attachments = new Attachments($this);
+		$this->twitter = new Twitter($this);
 	}
 
 	/*
