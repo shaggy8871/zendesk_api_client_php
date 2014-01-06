@@ -11,7 +11,10 @@ class Twitter {
 		$this->client = $client;
 	}
 
-	public function handles($params = array ()) {
+	/*
+	 * Return a list of monitored handles
+	 */
+	public function handles() {
 		$endPoint = 'channels/twitter/monitored_twitter_handles.json';
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->lastResponseCode != 200)) {
@@ -21,6 +24,9 @@ class Twitter {
 		return $response;
 	}
 
+	/*
+	 * Responds with details of a specific handle
+	 */
 	public function handleById($params) {
 		if(!$params['id']) {
 			$this->client->lastError = 'No id supplied for twitter->handleById';

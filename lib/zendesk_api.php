@@ -1,6 +1,9 @@
 <?php
 require_once ("lib/zendesk_api/http.php");
 require_once ("lib/zendesk_api/tickets.php");
+require_once ("lib/zendesk_api/ticket_audits.php");
+require_once ("lib/zendesk_api/ticket_comments.php");
+require_once ("lib/zendesk_api/ticket_fields.php");
 require_once ("lib/zendesk_api/attachments.php");
 require_once ("lib/zendesk_api/twitter.php");
 
@@ -22,11 +25,16 @@ class ZendeskAPI {
 	public $lastRequestHeaders;
 	public $lastResponseCode;
 	public $lastResponseHeaders;
+	public $lastTicket; // helper
+	public $sideLoad; // helper
 
 	/*
 	 * Public objects
 	 */
 	public $tickets;
+	public $ticketAudits;
+	public $ticketComments;
+	public $ticketFields;
 	public $attachments;
 	public $twitter;
 
@@ -35,6 +43,9 @@ class ZendeskAPI {
 		$this->username = $username;
 		$this->apiUrl = 'https://'.$subdomain.'.zendesk.com/api/'.$this->apiVer.'/';
 		$this->tickets = new Tickets($this);
+		$this->ticketAudits = new Ticket_Audits($this);
+		$this->ticketComments = new Ticket_Comments($this);
+		$this->ticketFields = new Ticket_Fields($this);
 		$this->attachments = new Attachments($this);
 		$this->twitter = new Twitter($this);
 	}
@@ -99,6 +110,44 @@ class ZendeskAPI {
 	 */
 	public function debugging() {
 		return $this->debug;
+	}
+
+	/*
+	 * Syntactic sugar methods (used for chaining):
+	 */
+	public function ticket($id) { $this->lastTicket = $id; return $this; }
+	public function withSideLoad($fields) { $this->sideLoad = $fields; return $this; } // must be called before helper
+	/*
+	 * Ticket helpers:
+	 */
+	public function find($params = array()) { return $this->tickets->find($params); }
+	public function update($params = array()) { return $this->tickets->update($params); }
+	public function delete($params = array()) { return $this->tickets->delete($params); }
+	public function markAsSpam($params = array()) { return $this->tickets->markAsSpam($params); } // I know, not a GETter method, but it makes sense :)
+	public function related($params = array()) { return $this->tickets->related($params); }
+	public function collaborators($params = array()) { return $this->tickets->collaborators($params); }
+	public function incidents($params = array()) { return $this->tickets->incidents($params); }
+	public function problems($params = array()) { return $this->tickets->problems($params); }
+	public function audits($params = array()) { return $this->tickets->audits->all($params); }
+	public function audit($params = array()) { return $this->tickets->audits->find($params); }
+	public function markAuditAsTrusted($params = array()) { return $this->tickets->audits->markAsTrusted($params); }
+	public function comments($params = array()) { return $this->tickets->comments->all($params); }
+	public function makeCommentPrivate($params = array()) { return $this->tickets->comments->makePrivate($params); }
+
+	/*
+	 * Technically not a helper function, but it's handy
+	 */
+	public function attach($params = array()) {
+		if((!$params['file']) || (!$params['type']) || (!$params['body'])) {
+			$this->client->lastError = 'Missing parameter: \'file\', \'type\' and \'body\' must be supplied for '.__METHOD__;
+			return false;
+		}
+		$upload = $this->attachments->upload($params);
+		if((!is_object($upload->upload)) && (!$upload->upload->token)) {
+			$this->lastError = 'Response to '.__METHOD__.' is not valid. See $client->lastResponseHeaders for details';
+			return false;
+		}
+		return $this->tickets->update(array('comment' => array('body' => $params['body'], 'uploads' => array($upload->upload->token))));
 	}
 
 }

@@ -24,6 +24,14 @@ class TicketsTest extends PHPUnit_Framework_TestCase {
 		$this->client->setAuth('token', $this->token);
 	}
 
+	public function testCredentials() {
+		$this->assertEquals($GLOBALS['SUBDOMAIN'] != '', true, 'Expecting GLOBALS[SUBDOMAIN] parameter; does phpunit.xml exist?');
+		$this->assertEquals($GLOBALS['TOKEN'] != '', true, 'Expecting GLOBALS[TOKEN] parameter; does phpunit.xml exist?');
+		$this->assertEquals($GLOBALS['PASSWORD'] != '', true, 'Expecting GLOBALS[PASSWORD] parameter; does phpunit.xml exist?');
+		$this->assertEquals($GLOBALS['OAUTH_TOKEN'] != '', true, 'Expecting GLOBALS[OAUTH_TOKEN] parameter; does phpunit.xml exist?');
+		$this->assertEquals($GLOBALS['USERNAME'] != '', true, 'Expecting GLOBALS[USERNAME] parameter; does phpunit.xml exist?');
+	}
+
 	public function testAuthPassword() {
 		$this->client->setAuth('password', $this->password);
 		$tickets = $this->client->tickets->all();
@@ -51,6 +59,30 @@ class TicketsTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(is_array($tickets->tickets), true, 'Should return an object containing an array called "tickets"');
 		$this->assertGreaterThan(0, $tickets->tickets[0]->id, 'Returns a non-numeric id in first ticket');
 		$this->assertContains($tickets->tickets[0]->priority, array (null, 'low', 'normal', 'high', 'urgent'), 'Returns an invalid priority in first ticket');
+		$this->assertEquals($this->client->lastError, '', 'Throws an error: '.$this->client->lastError);
+		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
+	}
+
+	/**
+	 * @depends testAuthToken
+	 */
+	public function testAllSideLoadedMethod() {
+		$tickets = $this->client->tickets->withSideLoad(array('users', 'groups'))->all();
+		$this->assertEquals(is_object($tickets), true, 'Should return an object');
+		$this->assertEquals(is_array($tickets->users), true, 'Should return an object containing an array called "users"');
+		$this->assertEquals(is_array($tickets->groups), true, 'Should return an object containing an array called "groups"');
+		$this->assertEquals($this->client->lastError, '', 'Throws an error: '.$this->client->lastError);
+		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
+	}
+
+	/**
+	 * @depends testAuthToken
+	 */
+	public function testAllSideLoadedParameter() {
+		$tickets = $this->client->tickets->all(array('sideload' => array('users', 'groups')));
+		$this->assertEquals(is_object($tickets), true, 'Should return an object');
+		$this->assertEquals(is_array($tickets->users), true, 'Should return an object containing an array called "users"');
+		$this->assertEquals(is_array($tickets->groups), true, 'Should return an object containing an array called "groups"');
 		$this->assertEquals($this->client->lastError, '', 'Throws an error: '.$this->client->lastError);
 		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
 	}
@@ -197,10 +229,24 @@ class TicketsTest extends PHPUnit_Framework_TestCase {
 	/**
 	 * @depends testAuthToken
 	 */
+	public function testExport() {
+		$tickets = $this->client->tickets->export(array('start_time' => '1332034771'));
+		$this->assertEquals(is_object($tickets), true, 'Should return an object');
+		$this->assertEquals(is_array($tickets->results), true, 'Should return an object containing an array called "results"');
+		$this->assertEquals($this->client->lastError, '', 'Throws an error: '.$this->client->lastError);
+		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
+	}
+
+	/**
+	 * @depends testAuthToken
+	 */
 	public function testCreateFromTweet() {
+		$this->markTestSkipped(
+			'Skipped for now because it requires a new (unique) twitter id for each test'
+		);
 		$params = array(
 			'monitored_twitter_handle_id' => 20032352,
-			'twitter_status_message_id' => '419191717649473536' // need to change this
+			'twitter_status_message_id' => '419191717649473536'
 		);
 		$ticket = $this->client->tickets->createFromTweet($params);
 		$this->assertEquals(is_object($ticket), true, 'Should return an object');

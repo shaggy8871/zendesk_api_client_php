@@ -5,6 +5,13 @@
 class Http {
 
 	/*
+	 * Prepares an endpoint URL with optional side-loading
+	 */
+	public static function prepare($endPoint, $includes = false) {
+		return $endPoint.(is_array($includes) ? (strpos($endPoint, '?') === false ? '?' : '&').'include='.implode(',', $includes) : '');
+	}
+
+	/*
 	 * Use the send method to call every endpoint except for oauth/tokens
 	 */
 	public static function send($client, $endPoint, $json = null, $method = 'GET', $contentType = 'application/json') {
@@ -23,7 +30,7 @@ class Http {
 			curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PUT');
 			curl_setopt($curl, CURLOPT_POSTFIELDS, $json);
 		} else {
-			$curl = curl_init($url.($json != null ? '?'.http_build_query($json) : ''));
+			$curl = curl_init($url.($json != (object) null ? '?'.http_build_query($json) : ''));
 			curl_setopt($curl, CURLOPT_CUSTOMREQUEST, ($method ? $method : 'GET'));
 		}
 		if($client->getAuthType() == 'oauth_token') {

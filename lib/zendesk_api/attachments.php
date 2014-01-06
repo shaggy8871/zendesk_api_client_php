@@ -21,21 +21,21 @@ class Attachments {
 	 */
 	public function upload($params) {
 		if(!$params['file']) {
-			$this->client->lastError = 'No file supplied for attachments->upload';
+			$this->client->lastError = 'No file supplied for '.__METHOD__;
 			return false;
 		}
 		if(!file_exists($params['file'])) {
-			$this->client->lastError = 'File '.$params['file'].' could not be found in attachments->upload';
+			$this->client->lastError = 'File '.$params['file'].' could not be found in '.__METHOD__;
 			return false;
 		}
 		if(!$params['type']) {
-			$this->client->lastError = 'No type parameter supplied for attachments->upload';
+			$this->client->lastError = 'No type parameter supplied for '.__METHOD__;
 			return false;
 		}
 		$endPoint = 'uploads.json?filename='.$params['file'].($params['optional_token'] ? '&token='.$params['optional_token'] : '');
 		$response = Http::send($this->client, $endPoint, array('filename' => '@'.$params['file']), 'POST', ($params['type'] ? $params['type'] : 'application/binary'));
 		if ((!is_object($response)) || ($this->client->lastResponseCode != 201)) {
-			$this->client->lastError = 'Response to attachments->upload is not valid. See $client->lastResponseHeaders for details';
+			$this->client->lastError = 'Response to '.__METHOD__.' is not valid. See $client->lastResponseHeaders for details';
 			return false;
 		}
 		return $response;
@@ -48,7 +48,7 @@ class Attachments {
 	 */
 	public function delete($params) {
 		if(!$params['token']) {
-			$this->client->lastError = 'No token supplied for attachments->delete';
+			$this->client->lastError = 'No token supplied for '.__METHOD__;
 			return false;
 		}
 		$endPoint = 'uploads/'.$params['token'].'.json';
@@ -58,7 +58,7 @@ class Attachments {
 			return false;
 		}
 		if ($this->client->lastResponseCode != 200) {
-			$this->client->lastError = 'Response to attachments->delete is not valid. See $client->lastResponseHeaders for details';
+			$this->client->lastError = 'Response to '.__METHOD__.' is not valid. See $client->lastResponseHeaders for details';
 			return false;
 		}
 		return true;
@@ -71,7 +71,7 @@ class Attachments {
 	 */
 	public function get($params) {
 		if(!$params['id']) {
-			$this->client->lastError = 'No id supplied for attachments->get';
+			$this->client->lastError = 'No id supplied for '.__METHOD__;
 			return false;
 		}
 		$id = $params['id'];
@@ -82,7 +82,7 @@ class Attachments {
 			return false;
 		}
 		if ($this->client->lastResponseCode != 200) {
-			$this->client->lastError = 'Response to attachments->get is not valid. See $client->lastResponseHeaders for details';
+			$this->client->lastError = 'Response to '.__METHOD__.' is not valid. See $client->lastResponseHeaders for details';
 			return false;
 		}
 		return $response;
@@ -95,7 +95,7 @@ class Attachments {
 	 */
 	public function deleteById($params) {
 		if(!$params['id']) {
-			$this->client->lastError = 'No id supplied for attachments->deleteById';
+			$this->client->lastError = 'No id supplied for '.__METHOD__;
 			return false;
 		}
 		$endPoint = 'attachments/'.$params['id'].'.json';
@@ -105,7 +105,7 @@ class Attachments {
 			return false;
 		}
 		if ($this->client->lastResponseCode != 200) {
-			$this->client->lastError = 'Response to attachments->deleteById is not valid. See $client->lastResponseHeaders for details';
+			$this->client->lastError = 'Response to '.__METHOD__.' is not valid. See $client->lastResponseHeaders for details';
 			return false;
 		}
 		return true;
