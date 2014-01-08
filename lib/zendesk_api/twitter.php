@@ -19,7 +19,6 @@ class Twitter {
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->lastResponseCode != 200)) {
 			$this->client->lastError = 'Response to twitter->handles is not valid. See $client->lastResponseHeaders for details';
-			return false;
 		}
 		return $response;
 	}
@@ -27,16 +26,15 @@ class Twitter {
 	/*
 	 * Responds with details of a specific handle
 	 */
-	public function handleById($params) {
+	public function handleById(array $params) {
 		if(!$params['id']) {
-			$this->client->lastError = 'No id supplied for twitter->handleById';
+			$this->client->lastError = 'Missing parameter: \'id\' must be supplied for '.__METHOD__;
 			return false;
 		}
 		$endPoint = 'channels/twitter/monitored_twitter_handles/'.$params['id'].'.json';
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->lastResponseCode != 200)) {
 			$this->client->lastError = 'Response to twitter->handleById is not valid. See $client->lastResponseHeaders for details';
-			return false;
 		}
 		return $response;
 	}

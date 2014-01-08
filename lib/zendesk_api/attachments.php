@@ -19,47 +19,39 @@ class Attachments {
 	 * Optional:
 	 *		'optional_token' - an existing token
 	 */
-	public function upload($params) {
+	public function upload(array $params) {
 		if(!$params['file']) {
-			$this->client->lastError = 'No file supplied for '.__METHOD__;
+			$this->client->lastError = 'Missing parameter: \'file\' must be supplied for '.__METHOD__;
 			return false;
 		}
 		if(!file_exists($params['file'])) {
 			$this->client->lastError = 'File '.$params['file'].' could not be found in '.__METHOD__;
 			return false;
 		}
-		if(!$params['type']) {
-			$this->client->lastError = 'No type parameter supplied for '.__METHOD__;
-			return false;
-		}
 		$endPoint = 'uploads.json?filename='.$params['file'].($params['optional_token'] ? '&token='.$params['optional_token'] : '');
 		$response = Http::send($this->client, $endPoint, array('filename' => '@'.$params['file']), 'POST', ($params['type'] ? $params['type'] : 'application/binary'));
 		if ((!is_object($response)) || ($this->client->lastResponseCode != 201)) {
 			$this->client->lastError = 'Response to '.__METHOD__.' is not valid. See $client->lastResponseHeaders for details';
-			return false;
 		}
 		return $response;
 	}
 
 	/*
-	 * Delete one or more attachments by token
-	 * $params must include:
+	 * Delete one or more attachments by token or id
+	 * $params must include one of these:
 	 *		'token' - the token given to you after the original upload
+	 *		'id' - the id of the attachment
 	 */
-	public function delete($params) {
-		if(!$params['token']) {
-			$this->client->lastError = 'No token supplied for '.__METHOD__;
+	public function delete(array $params) {
+		if((!$params['token']) && (!$params['id'])) {
+			$this->client->lastError = 'Missing parameter: \'id\' or \'token\' must be supplied for '.__METHOD__;
 			return false;
 		}
-		$endPoint = 'uploads/'.$params['token'].'.json';
+		$endPoint = ($params['token'] ? 'uploads/'.$params['token'] : 'attachments/'.$params['id']).'.json';
 		$response = Http::send($this->client, $endPoint, null, 'DELETE');
-		if ($this->client->lastResponseCode == 401) {
-			$this->client->lastError = 'The token does not exist';
-			return false;
-		}
 		if ($this->client->lastResponseCode != 200) {
 			$this->client->lastError = 'Response to '.__METHOD__.' is not valid. See $client->lastResponseHeaders for details';
-			return false;
+			return $response;
 		}
 		return true;
 	}
@@ -67,48 +59,28 @@ class Attachments {
 	/*
 	 * Get a list of uploaded attachments (by id)
 	 * $params must include:
-	 *		'id' - ???
+	 *		'id' - the id of the attachment
 	 */
-	public function get($params) {
+	public function find(array $params) {
 		if(!$params['id']) {
-			$this->client->lastError = 'No id supplied for '.__METHOD__;
+			$this->client->lastError = 'Missing parameter: \'id\' must be supplied for '.__METHOD__;
 			return false;
 		}
 		$id = $params['id'];
 		$endPoint = 'attachments/'.$id.'.json';
 		$response = Http::send($this->client, $endPoint);
-		if ($this->client->lastResponseCode == 401) {
-			$this->client->lastError = 'The attachment id does not exist';
-			return false;
-		}
 		if ($this->client->lastResponseCode != 200) {
 			$this->client->lastError = 'Response to '.__METHOD__.' is not valid. See $client->lastResponseHeaders for details';
-			return false;
 		}
 		return $response;
 	}
 
 	/*
-	 * Delete one or more attachments by id
-	 * $params must include:
-	 *		'id' - ???
+	 * Enable side-loading (beta) - flags until the next endpoint call
 	 */
-	public function deleteById($params) {
-		if(!$params['id']) {
-			$this->client->lastError = 'No id supplied for '.__METHOD__;
-			return false;
-		}
-		$endPoint = 'attachments/'.$params['id'].'.json';
-		$response = Http::send($this->client, $endPoint, null, 'DELETE');
-		if ($this->client->lastResponseCode == 401) {
-			$this->client->lastError = 'The attachment id does not exist';
-			return false;
-		}
-		if ($this->client->lastResponseCode != 200) {
-			$this->client->lastError = 'Response to '.__METHOD__.' is not valid. See $client->lastResponseHeaders for details';
-			return false;
-		}
-		return true;
+	public function sideload(array $fields) {
+		$this->client->sideload = $fields;
+		return $this;
 	}
 
 }

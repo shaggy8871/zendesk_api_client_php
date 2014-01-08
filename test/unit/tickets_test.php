@@ -67,7 +67,7 @@ class TicketsTest extends PHPUnit_Framework_TestCase {
 	 * @depends testAuthToken
 	 */
 	public function testAllSideLoadedMethod() {
-		$tickets = $this->client->tickets->withSideLoad(array('users', 'groups'))->all();
+		$tickets = $this->client->tickets->sideload(array('users', 'groups'))->all();
 		$this->assertEquals(is_object($tickets), true, 'Should return an object');
 		$this->assertEquals(is_array($tickets->users), true, 'Should return an object containing an array called "users"');
 		$this->assertEquals(is_array($tickets->groups), true, 'Should return an object containing an array called "groups"');
@@ -91,7 +91,7 @@ class TicketsTest extends PHPUnit_Framework_TestCase {
 	 * @depends testAuthToken
 	 */
 	public function testFindSingle() {
-		$tickets = $this->client->tickets->find(array('id' => 2)); // ticket #2 must never be deleted
+		$tickets = $this->client->ticket(2)->find(); // ticket #2 must never be deleted
 		$this->assertEquals(is_object($tickets), true, 'Should return an object');
 		$this->assertEquals(is_object($tickets->ticket), true, 'Should return an object called "ticket"');
 		$this->assertEquals($this->client->lastError, '', 'Throws an error: '.$this->client->lastError);
@@ -102,7 +102,7 @@ class TicketsTest extends PHPUnit_Framework_TestCase {
 	 * @depends testAuthToken
 	 */
 	public function testFindMultiple() {
-		$tickets = $this->client->tickets->find(array('id' => array(2, 3)));
+		$tickets = $this->client->tickets(array(2, 3))->find();
 		$this->assertEquals(is_object($tickets), true, 'Should return an object');
 		$this->assertEquals(is_array($tickets->tickets), true, 'Should return an array called "tickets"');
 		$this->assertEquals(is_object($tickets->tickets[0]), true, 'Should return an object as first "tickets" array element');
@@ -189,7 +189,7 @@ class TicketsTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(is_object($ticket2->ticket), true, 'Ticket2: Should return an object called "ticket"');
 		$this->assertGreaterThan(0, $ticket2->ticket->id, 'Ticket2: Returns a non-numeric id for ticket');
 		// Test delete
-		$this->client->tickets->delete(array('id' => array($ticket1->ticket->id, $ticket2->ticket->id)));
+		$this->client->tickets(array($ticket1->ticket->id, $ticket2->ticket->id))->delete();
 		$this->assertEquals($this->client->lastError, '', 'Throws an error: '.$this->client->lastError);
 		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
 	}
@@ -198,12 +198,6 @@ class TicketsTest extends PHPUnit_Framework_TestCase {
 	 * @depends testAuthToken
 	 */
 	public function testCreateWithAttachment() {
-		$attachment = $this->client->attachments->upload(array(
-			'file' => getcwd().'/test/unit/UK.png',
-			'type' => 'image/png'
-		));
-		$this->assertEquals($this->client->lastError, '', 'Throws an error: '.$this->client->lastError);
-		$this->assertEquals($this->client->lastResponseCode, '201', 'Does not return HTTP code 201');
 		$testTicket = array(
 			'subject' => 'The quick brown fox jumps over the lazy dog', 
 			'comment' => array (
@@ -212,7 +206,9 @@ class TicketsTest extends PHPUnit_Framework_TestCase {
 			), 
 			'priority' => 'normal'
 		);
-		$ticket = $this->client->tickets->create($testTicket);
+		$ticket = $this->client->tickets->attach(array(
+			'file' => getcwd().'/test/unit/UK.png'
+		))->create($testTicket);
 		$this->assertEquals(is_object($ticket), true, 'Should return an object');
 		$this->assertEquals(is_object($ticket->ticket), true, 'Should return an object called "ticket"');
 		$this->assertGreaterThan(0, $ticket->ticket->id, 'Returns a non-numeric id for ticket');
@@ -221,7 +217,7 @@ class TicketsTest extends PHPUnit_Framework_TestCase {
 		$this->assertGreaterThan(0, count($ticket->audit->events[0]->attachments), 'Attachment count should be above zero');
 		$this->assertEquals($this->client->lastError, '', 'Create throws an error: '.$this->client->lastError);
 		$this->assertEquals($this->client->lastResponseCode, '201', 'Create does not return HTTP code 201');
-		$this->client->tickets->delete(array('id' => $ticket->ticket->id));
+		$this->client->ticket($ticket->ticket->id)->delete();
 		$this->assertEquals($this->client->lastError, '', 'Delete throws an error: '.$this->client->lastError);
 		$this->assertEquals($this->client->lastResponseCode, '200', 'Delete does not return HTTP code 200');
 	}

@@ -5,7 +5,7 @@ require_once ("lib/zendesk_api.php");
 /**
  * Ticket Audits test class
  */
-class TicketCommentsTest extends PHPUnit_Framework_TestCase {
+class TicketImportTest extends PHPUnit_Framework_TestCase {
 
 	private $client;
 	private $subdomain;
@@ -39,25 +39,21 @@ class TicketCommentsTest extends PHPUnit_Framework_TestCase {
 	/**
 	 * @depends testAuthToken
 	 */
-	public function testAll() {
-		$comments = $this->client->ticket(76)->comments(); // Don't delete ticket #76
-		$this->assertEquals(is_object($comments), true, 'Should return an object');
-		$this->assertEquals(is_array($comments->comments), true, 'Should return an object containing an array called "comments"');
-		$this->assertGreaterThan(0, $comments->comments[0]->id, 'Returns a non-numeric id in first audit');
+	public function testImport() {
+		$confirm = $this->client->tickets->import(array(
+			'subject' => 'Help',
+			'description' => 'A description',
+			'comments' => array(
+				array('author_id' => 454094082, 'value' => 'This is a comment') // 454094082 is me
+			)
+		));
+		$this->assertEquals(is_object($confirm), true, 'Should return an object');
+		$this->assertEquals(is_object($confirm->ticket), true, 'Should return an object called "ticket"');
+		$this->assertGreaterThan(0, $confirm->ticket->id, 'Returns a non-numeric id for ticket');
+		$this->assertEquals($confirm->ticket->subject, 'Help', 'Subject of test ticket does not match');
+		$this->assertEquals($confirm->ticket->description, 'A description', 'Description of test ticket does not match');
 		$this->assertEquals($this->client->lastError, '', 'Throws an error: '.$this->client->lastError);
-		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
-	}
-
-	/*
-	 * Test make private
-	 */
-	public function testMakePrivate() {
-		$this->markTestSkipped(
-			'Skipped for now because it requires a new (unique) comment id for each test'
-		);
-		$comments = $this->client->ticket(76)->comments(16303442242)->makePrivate();
-		$this->assertEquals($this->client->lastError, '', 'Throws an error: '.$this->client->lastError);
-		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
+		$this->assertEquals($this->client->lastResponseCode, '201', 'Does not return HTTP code 201');
 	}
 
 }

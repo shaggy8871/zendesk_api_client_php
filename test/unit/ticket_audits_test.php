@@ -52,7 +52,7 @@ class TicketAuditsTest extends PHPUnit_Framework_TestCase {
 	 * @depends testAuthToken
 	 */
 	public function testAllSideLoadedMethod() {
-		$audits = $this->client->ticket(2)->withSideLoad(array('users', 'groups'))->audits();
+		$audits = $this->client->ticket(2)->sideload(array('users', 'groups'))->audits();
 		$this->assertEquals(is_object($audits), true, 'Should return an object');
 		$this->assertEquals(is_array($audits->users), true, 'Should return an object containing an array called "users"');
 		$this->assertEquals(is_array($audits->groups), true, 'Should return an object containing an array called "groups"');
@@ -76,7 +76,7 @@ class TicketAuditsTest extends PHPUnit_Framework_TestCase {
 	 * @depends testAuthToken
 	 */
 	public function testFind() {
-		$audits = $this->client->ticket(2)->audit(array('id' => '16317679361')); // ticket #2 must never be deleted, nor audit #16317679361
+		$audits = $this->client->ticket(2)->audit(16317679361)->find(); // ticket #2 must never be deleted, nor audit #16317679361
 		$this->assertEquals(is_object($audits), true, 'Should return an object');
 		$this->assertEquals(is_object($audits->audit), true, 'Should return an object containing an array called "audit"');
 		$this->assertEquals('16317679361', $audits->audit->id, 'Returns an incorrect id in audit object');
@@ -88,7 +88,7 @@ class TicketAuditsTest extends PHPUnit_Framework_TestCase {
 	 * Test mark as trusted
 	 */
 	public function testMarkAsTrusted() {
-		$audits = $this->client->ticket(2)->markAuditAsTrusted(array('id' => '16317679361'));
+		$audits = $this->client->ticket(2)->audit(16317679361)->markAsTrusted();
 		$this->assertEquals($this->client->lastError, '', 'Throws an error: '.$this->client->lastError);
 		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
 	}

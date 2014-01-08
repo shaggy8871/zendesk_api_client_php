@@ -52,7 +52,7 @@ class TicketFieldsTest extends PHPUnit_Framework_TestCase {
 	 * @depends testAuthToken
 	 */
 	public function testFind() {
-		$fields = $this->client->tickets->fields->find(array('id' => '23153032')); // ticket field #23153032 must never be deleted
+		$fields = $this->client->tickets->field(23153032)->find(); // ticket field #23153032 must never be deleted
 		$this->assertEquals(is_object($fields), true, 'Should return an object');
 		$this->assertEquals(is_object($fields->ticket_field), true, 'Should return an object called "ticket_field"');
 		$this->assertEquals('23153032', $fields->ticket_field->id, 'Returns an incorrect id in ticket field object');
@@ -85,8 +85,7 @@ class TicketFieldsTest extends PHPUnit_Framework_TestCase {
 	 */
 	public function testUpdate(array $stack) {
 		$id = array_pop($stack);
-		$field = $this->client->tickets->fields->update(array(
-			'id' => $id,
+		$field = $this->client->tickets->field($id)->update(array(
 			'title' => 'Another value'
 		));
 		$this->assertEquals(is_object($field), true, 'Should return an object');
@@ -106,9 +105,7 @@ class TicketFieldsTest extends PHPUnit_Framework_TestCase {
 	 */
 	public function testDelete(array $stack) {
 		$id = array_pop($stack);
-		$field = $this->client->tickets->fields->delete(array(
-			'id' => $id
-		));
+		$field = $this->client->tickets->field($id)->delete();
 		$this->assertEquals($this->client->lastError, '', 'Throws an error: '.$this->client->lastError);
 		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
 		$id = $field->ticket_field->id;

@@ -3,9 +3,9 @@
 require_once ("lib/zendesk_api.php");
 
 /**
- * Ticket Audits test class
+ * Ticket Metrics test class
  */
-class TicketCommentsTest extends PHPUnit_Framework_TestCase {
+class TicketMetricsTest extends PHPUnit_Framework_TestCase {
 
 	private $client;
 	private $subdomain;
@@ -40,22 +40,22 @@ class TicketCommentsTest extends PHPUnit_Framework_TestCase {
 	 * @depends testAuthToken
 	 */
 	public function testAll() {
-		$comments = $this->client->ticket(76)->comments(); // Don't delete ticket #76
-		$this->assertEquals(is_object($comments), true, 'Should return an object');
-		$this->assertEquals(is_array($comments->comments), true, 'Should return an object containing an array called "comments"');
-		$this->assertGreaterThan(0, $comments->comments[0]->id, 'Returns a non-numeric id in first audit');
+		$metrics = $this->client->tickets->metrics();
+		$this->assertEquals(is_object($metrics), true, 'Should return an object');
+		$this->assertEquals(is_array($metrics->ticket_metrics), true, 'Should return an object containing an array called "ticket_metrics"');
+		$this->assertGreaterThan(0, $metrics->ticket_metrics[0]->id, 'Returns a non-numeric id for ticket_metrics[0]');
 		$this->assertEquals($this->client->lastError, '', 'Throws an error: '.$this->client->lastError);
 		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
 	}
 
-	/*
-	 * Test make private
+	/**
+	 * @depends testAuthToken
 	 */
-	public function testMakePrivate() {
-		$this->markTestSkipped(
-			'Skipped for now because it requires a new (unique) comment id for each test'
-		);
-		$comments = $this->client->ticket(76)->comments(16303442242)->makePrivate();
+	public function testFind() {
+		$metric = $this->client->tickets->metric(631964852)->find();
+		$this->assertEquals(is_object($metric), true, 'Should return an object');
+		$this->assertEquals(is_object($metric->ticket_metric), true, 'Should return an object called "ticket_metric"');
+		$this->assertGreaterThan(0, $metric->ticket_metric->id, 'Returns a non-numeric id for ticket_metric');
 		$this->assertEquals($this->client->lastError, '', 'Throws an error: '.$this->client->lastError);
 		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
 	}
