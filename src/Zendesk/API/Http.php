@@ -1,4 +1,7 @@
 <?php
+
+namespace Zendesk\API;
+
 /**
  * HTTP functions via curl
  */
@@ -49,11 +52,16 @@ class Http {
 		curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
 		curl_setopt($curl, CURLOPT_MAXREDIRS, 3);
 		$response = curl_exec($curl);
+		if ($response === false) {
+			throw new \Exception('No response from curl_exec in '.__METHOD__);
+		}
 		$headerSize = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
 		$responseBody = substr($response, $headerSize);
-		$client->lastRequestHeaders = curl_getinfo($curl, CURLINFO_HEADER_OUT);
-		$client->lastResponseCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-		$client->lastResponseHeaders = substr($response, 0, $headerSize);
+		$client->setDebug(
+			curl_getinfo($curl, CURLINFO_HEADER_OUT), 
+			curl_getinfo($curl, CURLINFO_HTTP_CODE), 
+			substr($response, 0, $headerSize)
+		);
 		curl_close($curl);
 
 		return json_decode($responseBody);
@@ -89,11 +97,16 @@ class Http {
 		curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
 		curl_setopt($curl, CURLOPT_MAXREDIRS, 3);
 		$response = curl_exec($curl);
+		if ($response === false) {
+			throw new \Exception('No response from curl_exec in '.__METHOD__);
+		}
 		$headerSize = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
 		$responseBody = substr($response, $headerSize);
-		$client->lastRequestHeaders = curl_getinfo($curl, CURLINFO_HEADER_OUT);
-		$client->lastResponseCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-		$client->lastResponseHeaders = substr($response, 0, $headerSize);
+		$client->setDebug(
+			curl_getinfo($curl, CURLINFO_HEADER_OUT), 
+			curl_getinfo($curl, CURLINFO_HTTP_CODE), 
+			substr($response, 0, $headerSize)
+		);
 		curl_close($curl);
 
 		return json_decode($responseBody);

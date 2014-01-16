@@ -1,11 +1,13 @@
 <?php
 
-require_once ("lib/zendesk_api.php");
+namespace Zendesk\API\Tests;
+
+use Zendesk\API\Client;
 
 /**
  * Ticket Audits test class
  */
-class TicketFormsTest extends PHPUnit_Framework_TestCase {
+class TicketFormsTest extends \PHPUnit_Framework_TestCase {
 
 	private $client;
 	private $subdomain;
@@ -20,7 +22,7 @@ class TicketFormsTest extends PHPUnit_Framework_TestCase {
 		$this->password = $GLOBALS['PASSWORD'];
 		$this->token = $GLOBALS['TOKEN'];
 		$this->oAuthToken = $GLOBALS['OAUTH_TOKEN'];
-		$this->client = new ZendeskAPI($this->subdomain, $this->username);
+		$this->client = new Client($this->subdomain, $this->username);
 		$this->client->setAuth('token', $this->token);
 	}
 
@@ -32,39 +34,37 @@ class TicketFormsTest extends PHPUnit_Framework_TestCase {
 
 	public function testAuthToken() {
 		$this->client->setAuth('token', $this->token);
-		$tickets = $this->client->tickets->all();
-		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
+		$tickets = $this->client->tickets()->findAll();
+		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
 	}
 
 	/**
 	 * @depends testAuthToken
 	 */
 	public function testAll() {
-		$forms = $this->client->tickets->forms();
+		$forms = $this->client->ticketForms()->findAll();
 		$this->assertEquals(is_object($forms), true, 'Should return an object');
 		$this->assertEquals(is_array($forms->ticket_forms), true, 'Should return an object containing an array called "ticket_forms"');
 		$this->assertGreaterThan(0, $forms->ticket_forms[0]->id, 'Returns a non-numeric id in first ticket form');
-		$this->assertEquals($this->client->lastError, '', 'Throws an error: '.$this->client->lastError);
-		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
+		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
 	}
 
 	/**
 	 * @depends testAuthToken
 	 */
 	public function testFind() {
-		$forms = $this->client->tickets->form(9881)->find(); // ticket form #9881 must never be deleted
+		$forms = $this->client->ticketForm(9881)->find(); // ticket form #9881 must never be deleted
 		$this->assertEquals(is_object($forms), true, 'Should return an object');
 		$this->assertEquals(is_object($forms->ticket_form), true, 'Should return an object called "ticket_form"');
 		$this->assertEquals('9881', $forms->ticket_form->id, 'Returns an incorrect id in ticket form object');
-		$this->assertEquals($this->client->lastError, '', 'Throws an error: '.$this->client->lastError);
-		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
+		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
 	}
 
 	/**
 	 * @depends testAuthToken
 	 */
 	public function testCreate() {
-		$form = $this->client->tickets->forms->create(array(
+		$form = $this->client->ticketForms()->create(array(
 			'name' => 'Snowboard Problem',
 			'end_user_visible' => true,
 			'display_name' => 'Snowboard Damage',
@@ -77,8 +77,7 @@ class TicketFormsTest extends PHPUnit_Framework_TestCase {
 		$this->assertGreaterThan(0, $form->ticket_form->id, 'Returns a non-numeric id for ticket_form');
 		$this->assertEquals($form->ticket_form->name, 'Snowboard Problem', 'Name of test ticket form does not match');
 		$this->assertEquals($form->ticket_form->display_name, 'Snowboard Damage', 'Display name of test ticket form does not match');
-		$this->assertEquals($this->client->lastError, '', 'Throws an error: '.$this->client->lastError);
-		$this->assertEquals($this->client->lastResponseCode, '201', 'Does not return HTTP code 201');
+		$this->assertEquals($this->client->getDebug()->lastResponseCode, '201', 'Does not return HTTP code 201');
 		$id = $form->ticket_form->id;
 		$stack = array($id);
 		return $stack;
@@ -89,7 +88,7 @@ class TicketFormsTest extends PHPUnit_Framework_TestCase {
 	 */
 	public function testUpdate(array $stack) {
 		$id = array_pop($stack);
-		$form = $this->client->tickets->form($id)->update(array(
+		$form = $this->client->ticketForm($id)->update(array(
 			'name' => 'Snowboard Fixed',
 			'display_name' => 'Snowboard has been fixed'
 		));
@@ -98,8 +97,7 @@ class TicketFormsTest extends PHPUnit_Framework_TestCase {
 		$this->assertGreaterThan(0, $form->ticket_form->id, 'Returns a non-numeric id for ticket_form');
 		$this->assertEquals($form->ticket_form->name, 'Snowboard Fixed', 'Name of test ticket form does not match');
 		$this->assertEquals($form->ticket_form->display_name, 'Snowboard has been fixed', 'Display name of test ticket form does not match');
-		$this->assertEquals($this->client->lastError, '', 'Throws an error: '.$this->client->lastError);
-		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
+		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
 		$id = $form->ticket_form->id;
 		$stack = array($id);
 		return $stack;
@@ -109,13 +107,14 @@ class TicketFormsTest extends PHPUnit_Framework_TestCase {
 	 * @depends testCreate
 	 */
 	public function testDelete(array $stack) {
-		/*
-		 * Getting error 422!
-		 */
 		$id = array_pop($stack);
-		$form = $this->client->tickets->form($id)->delete();
-		$this->assertEquals($this->client->lastError, '', 'Throws an error: '.$this->client->lastError);
-		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
+		/*
+		 * First deactivate, then delete
+		 */
+		$response = $this->client->ticketForm($id)->deactivate();
+		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Deactivate does not return HTTP code 200');
+		$form = $this->client->ticketForm($id)->delete();
+		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Delete does not return HTTP code 200');
 		$stack = array($id);
 		return $stack;
 	}
@@ -124,12 +123,14 @@ class TicketFormsTest extends PHPUnit_Framework_TestCase {
 	 * @depends testCreate
 	 */
 	public function testReorder(array $stack) {
-		/*
-		 * Getting error 500!
-		 */
-		$form = $this->client->tickets->forms->reorder(array('ticket_form_ids' => array($id)));
-		$this->assertEquals($this->client->lastError, '', 'Throws an error: '.$this->client->lastError);
-		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
+		$allForms = $this->client->ticketForms()->findAll();
+		$allIds = array();
+		while(list($k, $form) = each($allForms->ticket_forms)) {
+			$allIds[] = $form->id;
+		}
+		array_unshift($allIds, array_pop($allIds));
+		$form = $this->client->ticketForms()->reorder($allIds);
+		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
 		return $stack;
 	}
 
@@ -138,14 +139,18 @@ class TicketFormsTest extends PHPUnit_Framework_TestCase {
 	 */
 	public function testClone(array $stack) {
 		$id = array_pop($stack);
-		$form = $this->client->tickets->form($id)->cloneForm();
+		$form = $this->client->ticketForm(10782)->cloneForm(); // don't delete ticket form id #10782
 		$this->assertEquals(is_object($form), true, 'Should return an object');
 		$this->assertEquals(is_object($form->ticket_form), true, 'Should return an object called "ticket_form"');
 		$this->assertGreaterThan(0, $form->ticket_form->id, 'Returns a non-numeric id for ticket_form');
 		$this->assertEquals($form->ticket_form->name, 'Snowboard Fixed', 'Name of test ticket form does not match');
 		$this->assertEquals($form->ticket_form->display_name, 'Snowboard has been fixed', 'Display name of test ticket form does not match');
-		$this->assertEquals($this->client->lastError, '', 'Throws an error: '.$this->client->lastError);
-		$this->assertEquals($this->client->lastResponseCode, '201', 'Does not return HTTP code 201');
+		$this->assertEquals($this->client->getDebug()->lastResponseCode, '201', 'Does not return HTTP code 201');
+		$id = $form->ticket_form->id;
+		$response = $this->client->ticketForm($id)->deactivate();
+		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Deactivate does not return HTTP code 200');
+		$form = $this->client->ticketForm($id)->delete();
+		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Delete does not return HTTP code 200');
 	}
 
 }

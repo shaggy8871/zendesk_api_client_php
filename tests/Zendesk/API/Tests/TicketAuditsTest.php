@@ -1,11 +1,13 @@
 <?php
 
-require_once ("lib/zendesk_api.php");
+namespace Zendesk\API\Tests;
+
+use Zendesk\API\Client;
 
 /**
  * Ticket Audits test class
  */
-class TicketAuditsTest extends PHPUnit_Framework_TestCase {
+class TicketAuditsTest extends \PHPUnit_Framework_TestCase {
 
 	private $client;
 	private $subdomain;
@@ -20,7 +22,7 @@ class TicketAuditsTest extends PHPUnit_Framework_TestCase {
 		$this->password = $GLOBALS['PASSWORD'];
 		$this->token = $GLOBALS['TOKEN'];
 		$this->oAuthToken = $GLOBALS['OAUTH_TOKEN'];
-		$this->client = new ZendeskAPI($this->subdomain, $this->username);
+		$this->client = new Client($this->subdomain, $this->username);
 		$this->client->setAuth('token', $this->token);
 	}
 
@@ -32,8 +34,8 @@ class TicketAuditsTest extends PHPUnit_Framework_TestCase {
 
 	public function testAuthToken() {
 		$this->client->setAuth('token', $this->token);
-		$tickets = $this->client->tickets->all();
-		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
+		$tickets = $this->client->tickets()->findAll();
+		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
 	}
 
 	/**
@@ -44,8 +46,7 @@ class TicketAuditsTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(is_object($audits), true, 'Should return an object');
 		$this->assertEquals(is_array($audits->audits), true, 'Should return an object containing an array called "audits"');
 		$this->assertGreaterThan(0, $audits->audits[0]->id, 'Returns a non-numeric id in first audit');
-		$this->assertEquals($this->client->lastError, '', 'Throws an error: '.$this->client->lastError);
-		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
+		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
 	}
 
 	/**
@@ -56,8 +57,7 @@ class TicketAuditsTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(is_object($audits), true, 'Should return an object');
 		$this->assertEquals(is_array($audits->users), true, 'Should return an object containing an array called "users"');
 		$this->assertEquals(is_array($audits->groups), true, 'Should return an object containing an array called "groups"');
-		$this->assertEquals($this->client->lastError, '', 'Throws an error: '.$this->client->lastError);
-		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
+		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
 	}
 
 	/**
@@ -68,8 +68,7 @@ class TicketAuditsTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(is_object($audits), true, 'Should return an object');
 		$this->assertEquals(is_array($audits->users), true, 'Should return an object containing an array called "users"');
 		$this->assertEquals(is_array($audits->groups), true, 'Should return an object containing an array called "groups"');
-		$this->assertEquals($this->client->lastError, '', 'Throws an error: '.$this->client->lastError);
-		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
+		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
 	}
 
 	/**
@@ -80,8 +79,7 @@ class TicketAuditsTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(is_object($audits), true, 'Should return an object');
 		$this->assertEquals(is_object($audits->audit), true, 'Should return an object containing an array called "audit"');
 		$this->assertEquals('16317679361', $audits->audit->id, 'Returns an incorrect id in audit object');
-		$this->assertEquals($this->client->lastError, '', 'Throws an error: '.$this->client->lastError);
-		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
+		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
 	}
 
 	/*
@@ -89,8 +87,7 @@ class TicketAuditsTest extends PHPUnit_Framework_TestCase {
 	 */
 	public function testMarkAsTrusted() {
 		$audits = $this->client->ticket(2)->audit(16317679361)->markAsTrusted();
-		$this->assertEquals($this->client->lastError, '', 'Throws an error: '.$this->client->lastError);
-		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
+		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
 	}
 
 }

@@ -1,11 +1,13 @@
 <?php
 
-require_once ("lib/zendesk_api.php");
+namespace Zendesk\API\Tests;
+
+use Zendesk\API\Client;
 
 /**
  * Attachments test class
  */
-class AttachmentsTest extends PHPUnit_Framework_TestCase {
+class AttachmentsTest extends \PHPUnit_Framework_TestCase {
 
 	private $client;
 	private $subdomain;
@@ -20,25 +22,24 @@ class AttachmentsTest extends PHPUnit_Framework_TestCase {
 		$this->password = $GLOBALS['PASSWORD'];
 		$this->token = $GLOBALS['TOKEN'];
 		$this->oAuthToken = $GLOBALS['OAUTH_TOKEN'];
-		$this->client = new ZendeskAPI($this->subdomain, $this->username);
+		$this->client = new Client($this->subdomain, $this->username);
 		$this->client->setAuth('token', $this->token);
 	}
 
 	public function testAuthToken() {
-		$tickets = $this->client->tickets->all();
-		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
+		$tickets = $this->client->tickets()->findAll();
+		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
 	}
 
 	/**
 	 * @depends testAuthToken
 	 */
 	public function testUploadAttachment() {
-		$attachment = $this->client->attachments->upload(array(
-			'file' => getcwd().'/test/unit/UK.png',
+		$attachment = $this->client->attachments()->upload(array(
+			'file' => getcwd().'/tests/assets/UK.png',
 			'type' => 'image/png'
 		));
-		$this->assertEquals($this->client->lastError, '', 'Throws an error: '.$this->client->lastError);
-		$this->assertEquals($this->client->lastResponseCode, '201', 'Does not return HTTP code 201');
+		$this->assertEquals($this->client->getDebug()->lastResponseCode, '201', 'Does not return HTTP code 201');
 		$this->assertEquals(is_object($attachment), true, 'Should return an object');
 		$this->assertEquals(is_object($attachment->upload), true, 'Should return an object called "upload"');
 		$this->assertEquals(($attachment->upload->token != ''), true, 'Should return a token');
@@ -54,10 +55,10 @@ class AttachmentsTest extends PHPUnit_Framework_TestCase {
 	public function testDeleteAttachment(array $stack) {
 		$attachment = array_pop($stack);
 		$this->assertEquals(($attachment->upload->token != ''), true, 'Cannot find a token to test with. Did testUploadAttachment fail?');
-		$confirmed = $this->client->attachments->delete(array(
+		$confirmed = $this->client->attachments()->delete(array(
 			'token' => $attachment->upload->token
 		));
-		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
+		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
 	}
 
 }

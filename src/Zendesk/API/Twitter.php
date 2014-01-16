@@ -1,15 +1,11 @@
 <?php
 
+namespace Zendesk\API;
+
 /**
  * The Twitter class exposes methods for managing and monitoring Twitter posts
  */
-class Twitter {
-
-	private $client;
-
-	public function __construct($client) {
-		$this->client = $client;
-	}
+class Twitter extends ClientAbstract {
 
 	/*
 	 * Return a list of monitored handles
@@ -17,8 +13,8 @@ class Twitter {
 	public function handles() {
 		$endPoint = 'channels/twitter/monitored_twitter_handles.json';
 		$response = Http::send($this->client, $endPoint);
-		if ((!is_object($response)) || ($this->client->lastResponseCode != 200)) {
-			$this->client->lastError = 'Response to twitter->handles is not valid. See $client->lastResponseHeaders for details';
+		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
+			throw new ResponseException(__METHOD__);
 		}
 		return $response;
 	}
@@ -33,8 +29,8 @@ class Twitter {
 		}
 		$endPoint = 'channels/twitter/monitored_twitter_handles/'.$params['id'].'.json';
 		$response = Http::send($this->client, $endPoint);
-		if ((!is_object($response)) || ($this->client->lastResponseCode != 200)) {
-			$this->client->lastError = 'Response to twitter->handleById is not valid. See $client->lastResponseHeaders for details';
+		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
+			throw new ResponseException(__METHOD__);
 		}
 		return $response;
 	}

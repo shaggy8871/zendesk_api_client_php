@@ -1,0 +1,26 @@
+{
+    "name": "zendesk/client",
+    "description": "Client API for Zendesk REST. See http://developer.zendesk.com/documentation",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "DeVaris Brown",
+            "email": "dbrown@zendesk.com"
+        },
+        {
+            "name": "John Ginsberg",
+            "email": "john.ginsberg@toptal.com"
+        }
+    ],
+    "require": {
+		"php": ">=5.3.1"
+    },
+	"require-dev": {
+        "phpunit/phpunit": "3.7.*"
+    },
+	"autoload": {
+        "psr-0": {
+            "Zendesk\\API\\": "src/"
+        }
+    }
+}

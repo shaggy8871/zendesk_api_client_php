@@ -1,11 +1,13 @@
 <?php
 
-require_once ("lib/zendesk_api.php");
+namespace Zendesk\API\Tests;
+
+use Zendesk\API\Client;
 
 /**
- * Ticket Audits test class
+ * Ticket Comments test class
  */
-class TicketCommentsTest extends PHPUnit_Framework_TestCase {
+class TicketCommentsTest extends \PHPUnit_Framework_TestCase {
 
 	private $client;
 	private $subdomain;
@@ -20,7 +22,7 @@ class TicketCommentsTest extends PHPUnit_Framework_TestCase {
 		$this->password = $GLOBALS['PASSWORD'];
 		$this->token = $GLOBALS['TOKEN'];
 		$this->oAuthToken = $GLOBALS['OAUTH_TOKEN'];
-		$this->client = new ZendeskAPI($this->subdomain, $this->username);
+		$this->client = new Client($this->subdomain, $this->username);
 		$this->client->setAuth('token', $this->token);
 	}
 
@@ -32,8 +34,8 @@ class TicketCommentsTest extends PHPUnit_Framework_TestCase {
 
 	public function testAuthToken() {
 		$this->client->setAuth('token', $this->token);
-		$tickets = $this->client->tickets->all();
-		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
+		$tickets = $this->client->tickets()->findAll();
+		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
 	}
 
 	/**
@@ -44,8 +46,7 @@ class TicketCommentsTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(is_object($comments), true, 'Should return an object');
 		$this->assertEquals(is_array($comments->comments), true, 'Should return an object containing an array called "comments"');
 		$this->assertGreaterThan(0, $comments->comments[0]->id, 'Returns a non-numeric id in first audit');
-		$this->assertEquals($this->client->lastError, '', 'Throws an error: '.$this->client->lastError);
-		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
+		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
 	}
 
 	/*
@@ -56,8 +57,7 @@ class TicketCommentsTest extends PHPUnit_Framework_TestCase {
 			'Skipped for now because it requires a new (unique) comment id for each test'
 		);
 		$comments = $this->client->ticket(76)->comments(16303442242)->makePrivate();
-		$this->assertEquals($this->client->lastError, '', 'Throws an error: '.$this->client->lastError);
-		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
+		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
 	}
 
 }
