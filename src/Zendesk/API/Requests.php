@@ -21,14 +21,14 @@ class Requests extends ClientAbstract {
 	/*
 	 * List all requests
 	 */
-	public function findAll() {
+	public function findAll(array $params = array()) {
 		$endPoint = Http::prepare(
-				($params['organization_id'] ? 'organizations/'.$params['organization_id'].'/requests' : 
-				($params['user_id'] ? 'users/'.$params['user_id'].'/requests' : 
-				($params['ccd'] ? 'requests/ccd' : 
-				($params['solved'] ? 'requests/solved' : 
-				($params['open'] ? 'requests/open' : 'requests'))))
-			).'.json'.($params['status'] ? '?status='.$params['status'] : ''), (is_array($params['sideload']) ? $params['sideload'] : $this->client->getSideload()));
+				(isset($params['organization_id']) ? 'organizations/'.$params['organization_id'].'/requests' : 
+				(isset($params['user_id']) ? 'users/'.$params['user_id'].'/requests' : 
+				(isset($params['ccd']) ? 'requests/ccd' : 
+				(isset($params['solved']) ? 'requests/solved' : 
+				(isset($params['open']) ? 'requests/open' : 'requests'))))
+			).'.json'.(isset($params['status']) ? '?status='.$params['status'] : ''), ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload()));
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);

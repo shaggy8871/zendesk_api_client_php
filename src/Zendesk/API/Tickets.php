@@ -10,16 +10,18 @@ class Tickets extends ClientAbstract {
 	protected $audits;
 	protected $comments;
 	protected $metrics;
+	protected $import;
 	/*
 	 * Helpers:
 	 */
 	protected $lastAttachments = array();
 
 	public function __construct($client) {
-		$this->client = $client;
+		parent::__construct($client);
 		$this->audits = new TicketAudits($client);
 		$this->comments = new TicketComments($client);
 		$this->metrics = new TicketMetrics($client);
+		$this->import = new TicketImport($client);
 	}
 
 	/*
@@ -323,6 +325,7 @@ class Tickets extends ClientAbstract {
 	public function comment($id) { return $this->comments->setLastId($id); }
 	public function metrics(array $params = array()) { return $this->metrics->findAll($params); }
 	public function metric($id) { return $this->metrics->setLastId($id); }
+	public function import(array $params) { return $this->import->import($params); }
 	public function attach(array $params = array()) {
 		if(!$params['file']) {
 			throw new MissingParametersException(__METHOD__, array('file'));

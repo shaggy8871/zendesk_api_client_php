@@ -109,10 +109,7 @@ class UsersTest extends \PHPUnit_Framework_TestCase {
 	 * @depends testAuthToken
 	 */
 	public function testCreateMany() {
-		$this->markTestSkipped(
-			'API broken???'
-		);
-		$users = $this->client->users()->createMany(array(
+		$jobStatus = $this->client->users()->createMany(array(
 			array(
 				'name' => 'Roger Wilco',
 				'email' => 'roge@example.org',
@@ -124,14 +121,11 @@ class UsersTest extends \PHPUnit_Framework_TestCase {
 				'verified' => true
 			))
 		);
-		$this->assertEquals(is_object($users), true, 'Should return an object');
-		$this->assertEquals(is_array($users->users), true, 'Should return an array called "users"');
-		$this->assertGreaterThan(0, $users->users[0]->id, 'Returns a non-numeric id for users[0]');
-		$this->assertEquals($this->client->getDebug()->lastResponseCode, '201', 'CreateMany does not return HTTP code 201');
-		$form = $this->client->user($users->users[0]->id)->delete();
-		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Delete 1 does not return HTTP code 200');
-		$form = $this->client->user($users->users[1]->id)->delete();
-		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Delete 2 does not return HTTP code 200');
+		$this->assertEquals(is_object($jobStatus), true, 'Should return an object');
+		$this->assertEquals(is_object($jobStatus->job_status), true, 'Should return an object called "job_status"');
+		$this->assertGreaterThan(0, $jobStatus->job_status->id, 'Returns a non-numeric id for users[0]');
+		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'CreateMany does not return HTTP code 200');
+		// There is no way to delete the newly created users AFAIK
 	}
 
 	/**

@@ -8,6 +8,16 @@ namespace Zendesk\API;
  */
 class Users extends ClientAbstract {
 
+	protected $identities;
+
+	public function __construct($client) {
+		parent::__construct($client);
+		/*
+		 * Additional sub-objects
+		 */
+		$this->identities = new UserIdentities($client);
+	}
+
 	/*
 	 * List all users
 	 */
@@ -32,7 +42,7 @@ class Users extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$endPoint = Http::prepare('users/'.$params['id'].'.json');
@@ -52,7 +62,7 @@ class Users extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$endPoint = Http::prepare('users/'.$params['id'].'/related.json');
@@ -84,7 +94,7 @@ class Users extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$id = $params['id'];
@@ -117,7 +127,7 @@ class Users extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$id = $params['id'];
@@ -153,7 +163,7 @@ class Users extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$id = $params['id'];
@@ -199,7 +209,7 @@ class Users extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if((!$params['id']) || (!$params['file'])) {
+		if(!$this->hasKeys($params, array('id', 'file'))) {
 			throw new MissingParametersException(__METHOD__, array('id', 'file'));
 		}
 		if(!file_exists($params['file'])) {
@@ -264,6 +274,17 @@ class Users extends ClientAbstract {
 		}
 		return $response;
 	}
+
+	/*
+	 * Syntactic sugar methods:
+	 * Handy aliases:
+	 */
+	public function identities($id = null) { return ($id != null ? $this->identities->setLastId($id) : $this->identities); }
+	public function identity($id) { return $this->identities->setLastId($id); }
+	public function groups($id = null) { return ($id != null ? $this->client->groups()->setLastId($id) : $this->client->groups()); }
+	public function group($id) { return $this->client->groups()->setLastId($id); }
+	public function groupMemberships($id = null) { return ($id != null ? $this->client->groupMemberships()->setLastId($id) : $this->client->groupMemberships()); }
+	public function groupMembership($id) { return $this->client->groupMemberships()->setLastId($id); }
 
 }
 

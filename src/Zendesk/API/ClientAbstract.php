@@ -43,6 +43,18 @@ abstract class ClientAbstract
 	}
 
 	/*
+	 * Check that any parameter has been supplied
+	 */
+	public function hasAnyKey($params, $mandatory) {
+		for($i = 0; $i < count($mandatory); $i++) {
+			if(array_key_exists($mandatory[$i], $params)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/*
 	 * Enable side-loading (beta) - flags until the next chain
 	 */
 	public function sideload(array $fields = array()) {

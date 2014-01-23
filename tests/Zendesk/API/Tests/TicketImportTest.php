@@ -1,11 +1,13 @@
 <?php
 
-require_once ("lib/zendesk_api.php");
+namespace Zendesk\API\Tests;
+
+use Zendesk\API\Client;
 
 /**
- * Ticket Audits test class
+ * Ticket Imports test class
  */
-class TicketImportTest extends PHPUnit_Framework_TestCase {
+class TicketImportTest extends \PHPUnit_Framework_TestCase {
 
 	private $client;
 	private $subdomain;
@@ -20,7 +22,7 @@ class TicketImportTest extends PHPUnit_Framework_TestCase {
 		$this->password = $GLOBALS['PASSWORD'];
 		$this->token = $GLOBALS['TOKEN'];
 		$this->oAuthToken = $GLOBALS['OAUTH_TOKEN'];
-		$this->client = new ZendeskAPI($this->subdomain, $this->username);
+		$this->client = new Client($this->subdomain, $this->username);
 		$this->client->setAuth('token', $this->token);
 	}
 
@@ -32,15 +34,15 @@ class TicketImportTest extends PHPUnit_Framework_TestCase {
 
 	public function testAuthToken() {
 		$this->client->setAuth('token', $this->token);
-		$tickets = $this->client->tickets->all();
-		$this->assertEquals($this->client->lastResponseCode, '200', 'Does not return HTTP code 200');
+		$tickets = $this->client->tickets()->findAll();
+		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
 	}
 
 	/**
 	 * @depends testAuthToken
 	 */
 	public function testImport() {
-		$confirm = $this->client->tickets->import(array(
+		$confirm = $this->client->tickets()->import(array(
 			'subject' => 'Help',
 			'description' => 'A description',
 			'comments' => array(
@@ -52,8 +54,7 @@ class TicketImportTest extends PHPUnit_Framework_TestCase {
 		$this->assertGreaterThan(0, $confirm->ticket->id, 'Returns a non-numeric id for ticket');
 		$this->assertEquals($confirm->ticket->subject, 'Help', 'Subject of test ticket does not match');
 		$this->assertEquals($confirm->ticket->description, 'A description', 'Description of test ticket does not match');
-		$this->assertEquals($this->client->lastError, '', 'Throws an error: '.$this->client->lastError);
-		$this->assertEquals($this->client->lastResponseCode, '201', 'Does not return HTTP code 201');
+		$this->assertEquals($this->client->getDebug()->lastResponseCode, '201', 'Does not return HTTP code 201');
 	}
 
 }

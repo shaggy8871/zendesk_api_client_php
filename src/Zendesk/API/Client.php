@@ -24,11 +24,17 @@ class Client {
 	protected $tickets;
 	protected $ticketFields;
 	protected $ticketForms;
-	protected $ticketImport;
 	protected $twitter;
 	protected $attachments;
 	protected $requests;
 	protected $users;
+	protected $userFields;
+	protected $groups;
+	protected $groupMemberships;
+	protected $customRoles;
+	protected $forums;
+	protected $categories;
+	protected $topics;
 	protected $debug;
 
 	public function __construct($subdomain, $username) {
@@ -39,11 +45,18 @@ class Client {
 		$this->tickets = new Tickets($this);
 		$this->ticketFields = new TicketFields($this);
 		$this->ticketForms = new TicketForms($this);
-		$this->ticketImport = new TicketImport($this);
 		$this->twitter = new Twitter($this);
 		$this->attachments = new Attachments($this);
 		$this->requests = new Requests($this);
+		$this->views = new Views($this);
 		$this->users = new Users($this);
+		$this->userFields = new UserFields($this);
+		$this->groups = new Groups($this);
+		$this->groupMemberships = new GroupMemberships($this);
+		$this->customRoles = new CustomRoles($this);
+		$this->forums = new Forums($this);
+		$this->categories = new Categories($this);
+		$this->topics = new Topics($this);
 	}
 
 	/*
@@ -126,51 +139,25 @@ class Client {
 	}
 
 	/*
-	 * Syntactic sugar getters and setters
+	 * Generic method to object getter
 	 */
-	public function tickets($id = null) {
-		if ($id !== null) {
-			return $this->tickets->setLastId($id);
+	public function __call($name, $arguments) {
+		if(isset($this->$name)) {
+			return ((isset($arguments[0])) && ($arguments[0] != null) ? $this->$name->setLastId($arguments[0]) : $this->$name);
+		}
+		$namePlural = $name.'s'; // try pluralize
+		if(isset($this->$namePlural)) {
+			return $this->$namePlural->setLastId($arguments[0]);
 		} else {
-			return $this->tickets;
+			throw new CustomException("No method called $name available in ".__CLASS__);
 		}
 	}
-	public function ticket($id) {
-		return $this->tickets->setLastId($id);
-	}
 
-	public function ticketFields() {
-		return $this->ticketFields;
-	}
-	public function ticketField($id) {
-		return $this->ticketFields->setLastId($id);
-	}
-	public function ticketForms() {
-		return $this->ticketForms;
-	}
-	public function ticketForm($id) {
-		return $this->ticketForms->setLastId($id);
-	}
-	public function ticketImport() {
-		return $this->ticketImport;
-	}
-	public function twitter() {
-		return $this->twitter;
-	}
-	public function attachments() {
-		return $this->attachments;
-	}
-	public function requests() {
-		return $this->requests;
-	}
-	public function request($id) {
-		return $this->requests->setLastId($id);
-	}
-	public function users() {
-		return $this->users;
-	}
-	public function user($id) {
-		return $this->users->setLastId($id);
+	/*
+	 * This one doesn't follow the usual construct
+	 */
+	public function category($id) {
+		return $this->categories->setLastId($id);
 	}
 
 }
