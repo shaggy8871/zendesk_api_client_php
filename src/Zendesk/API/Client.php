@@ -35,6 +35,10 @@ class Client {
 	protected $forums;
 	protected $categories;
 	protected $topics;
+	protected $settings;
+	protected $activityStream;
+	protected $auditLogs;
+	protected $autocomplete;
 	protected $debug;
 
 	public function __construct($subdomain, $username) {
@@ -57,6 +61,10 @@ class Client {
 		$this->forums = new Forums($this);
 		$this->categories = new Categories($this);
 		$this->topics = new Topics($this);
+		$this->settings = new Settings($this);
+		$this->activityStream = new ActivityStream($this);
+		$this->auditLogs = new AuditLogs($this);
+		$this->autocomplete = new Autocomplete($this);
 	}
 
 	/*
@@ -154,11 +162,11 @@ class Client {
 	}
 
 	/*
-	 * This one doesn't follow the usual construct
+	 * These ones don't follow the usual construct
 	 */
-	public function category($id) {
-		return $this->categories->setLastId($id);
-	}
+	public function category($id) { return $this->categories->setLastId($id); }
+	public function activities($id = null) { return ($id != null ? $this->activityStream()->setLastId($id) : $this->activityStream()); }
+	public function activity($id) { return $this->activityStream()->setLastId($id); }
 
 }
 
