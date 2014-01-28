@@ -11,6 +11,7 @@ class Tickets extends ClientAbstract {
 	protected $comments;
 	protected $metrics;
 	protected $import;
+    protected $satisfactionRatings;
 	/*
 	 * Helpers:
 	 */
@@ -22,6 +23,7 @@ class Tickets extends ClientAbstract {
 		$this->comments = new TicketComments($client);
 		$this->metrics = new TicketMetrics($client);
 		$this->import = new TicketImport($client);
+        $this->satisfactionRatings = new SatisfactionRatings($client);
 	}
 
 	/*
@@ -316,15 +318,26 @@ class Tickets extends ClientAbstract {
 	}
 
 	/*
+	 * Generic method to object getter. Since all objects are protected, this method
+     * exposes a getter function with the same name as the protected variable, for example
+     * $client->tickets can be referenced by $client->tickets()
+	 */
+	public function __call($name, $arguments) {
+		if(isset($this->$name)) {
+			return ((isset($arguments[0])) && ($arguments[0] != null) ? $this->$name->setLastId($arguments[0]) : $this->$name);
+		}
+		$namePlural = $name.'s'; // try pluralize
+		if(isset($this->$namePlural)) {
+			return $this->$namePlural->setLastId($arguments[0]);
+		} else {
+			throw new CustomException("No method called $name available in ".__CLASS__);
+		}
+	}
+
+	/*
 	 * Syntactic sugar methods:
 	 * Handy aliases:
 	 */
-	public function audits(array $params = array()) { return $this->audits->findAll($params); }
-	public function audit($id) { return $this->audits->setLastId($id); }
-	public function comments(array $params = array()) { return $this->comments->findAll($params); }
-	public function comment($id) { return $this->comments->setLastId($id); }
-	public function metrics(array $params = array()) { return $this->metrics->findAll($params); }
-	public function metric($id) { return $this->metrics->setLastId($id); }
 	public function import(array $params) { return $this->import->import($params); }
 	public function attach(array $params = array()) {
 		if(!$params['file']) {

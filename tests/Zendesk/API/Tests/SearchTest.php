@@ -5,9 +5,9 @@ namespace Zendesk\API\Tests;
 use Zendesk\API\Client;
 
 /**
- * Ticket Comments test class
+ * Search test class
  */
-class TicketCommentsTest extends \PHPUnit_Framework_TestCase {
+class SearchTest extends \PHPUnit_Framework_TestCase {
 
 	private $client;
 	private $subdomain;
@@ -41,22 +41,22 @@ class TicketCommentsTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @depends testAuthToken
 	 */
-	public function testAll() {
-		$comments = $this->client->ticket(76)->comments()->findAll(); // Don't delete ticket #76
-		$this->assertEquals(is_object($comments), true, 'Should return an object');
-		$this->assertEquals(is_array($comments->comments), true, 'Should return an object containing an array called "comments"');
-		$this->assertGreaterThan(0, $comments->comments[0]->id, 'Returns a non-numeric id in first audit');
+	public function testSearch() {
+		$results = $this->client->search(array('query' => 'hello'));
+		$this->assertEquals(is_object($results), true, 'Should return an object');
+		$this->assertEquals(is_array($results->results), true, 'Should return an object containing an array called "results"');
+		$this->assertGreaterThan(0, $results->results[0]->id, 'Returns a non-numeric id for results[0]');
 		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
 	}
 
-	/*
-	 * Test make private
+	/**
+	 * @depends testAuthToken
 	 */
-	public function testMakePrivate() {
-		$this->markTestSkipped(
-			'Skipped for now because it requires a new (unique) comment id for each test'
-		);
-		$comments = $this->client->ticket(76)->comments(16303442242)->makePrivate();
+	public function testAnonymousSearch() {
+		$results = $this->client->anonymousSearch(array('query' => 'hello'));
+		$this->assertEquals(is_object($results), true, 'Should return an object');
+		$this->assertEquals(is_array($results->results), true, 'Should return an object containing an array called "results"');
+		$this->assertGreaterThan(0, $results->results[0]->id, 'Returns a non-numeric id for results[0]');
 		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
 	}
 

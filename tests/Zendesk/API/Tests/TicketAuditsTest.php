@@ -42,7 +42,7 @@ class TicketAuditsTest extends \PHPUnit_Framework_TestCase {
 	 * @depends testAuthToken
 	 */
 	public function testAll() {
-		$audits = $this->client->ticket(2)->audits();
+		$audits = $this->client->ticket(2)->audits()->findAll();
 		$this->assertEquals(is_object($audits), true, 'Should return an object');
 		$this->assertEquals(is_array($audits->audits), true, 'Should return an object containing an array called "audits"');
 		$this->assertGreaterThan(0, $audits->audits[0]->id, 'Returns a non-numeric id in first audit');
@@ -53,7 +53,7 @@ class TicketAuditsTest extends \PHPUnit_Framework_TestCase {
 	 * @depends testAuthToken
 	 */
 	public function testAllSideLoadedMethod() {
-		$audits = $this->client->ticket(2)->sideload(array('users', 'groups'))->audits();
+		$audits = $this->client->ticket(2)->sideload(array('users', 'groups'))->audits()->findAll();
 		$this->assertEquals(is_object($audits), true, 'Should return an object');
 		$this->assertEquals(is_array($audits->users), true, 'Should return an object containing an array called "users"');
 		$this->assertEquals(is_array($audits->groups), true, 'Should return an object containing an array called "groups"');
@@ -64,7 +64,7 @@ class TicketAuditsTest extends \PHPUnit_Framework_TestCase {
 	 * @depends testAuthToken
 	 */
 	public function testAllSideLoadedParameter() {
-		$audits = $this->client->ticket(2)->audits(array('sideload' => array('users', 'groups')));
+		$audits = $this->client->ticket(2)->audits()->findAll(array('sideload' => array('users', 'groups')));
 		$this->assertEquals(is_object($audits), true, 'Should return an object');
 		$this->assertEquals(is_array($audits->users), true, 'Should return an object containing an array called "users"');
 		$this->assertEquals(is_array($audits->groups), true, 'Should return an object containing an array called "groups"');

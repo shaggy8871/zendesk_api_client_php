@@ -23,9 +23,12 @@ class Twitter extends ClientAbstract {
 	 * Responds with details of a specific handle
 	 */
 	public function handleById(array $params) {
-		if(!$params['id']) {
-			$this->client->lastError = 'Missing parameter: \'id\' must be supplied for '.__METHOD__;
-			return false;
+		if($this->lastId != null) {
+			$params['id'] = $this->lastId;
+			$this->lastId = null;
+		}
+		if(!$this->hasKeys($params, array('id'))) {
+			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$endPoint = 'channels/twitter/monitored_twitter_handles/'.$params['id'].'.json';
 		$response = Http::send($this->client, $endPoint);

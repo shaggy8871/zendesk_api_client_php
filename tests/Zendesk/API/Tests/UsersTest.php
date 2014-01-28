@@ -109,6 +109,9 @@ class UsersTest extends \PHPUnit_Framework_TestCase {
 	 * @depends testAuthToken
 	 */
 	public function testCreateMany() {
+		$this->markTestSkipped(
+			'Skipped for now because we have no way of cleaning up.'
+		);
 		$jobStatus = $this->client->users()->createMany(array(
 			array(
 				'name' => 'Roger Wilco',
@@ -125,7 +128,6 @@ class UsersTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals(is_object($jobStatus->job_status), true, 'Should return an object called "job_status"');
 		$this->assertGreaterThan(0, $jobStatus->job_status->id, 'Returns a non-numeric id for users[0]');
 		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'CreateMany does not return HTTP code 200');
-		// There is no way to delete the newly created users AFAIK
 	}
 
 	/**

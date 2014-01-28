@@ -3,9 +3,9 @@
 namespace Zendesk\API;
 
 /*
- * Dead simple autoloader
+ * Dead simple autoloader:
+ * spl_autoload_register(function($c){@include 'src/'.preg_replace('#\\\|_(?!.+\\\)#','/',$c).'.php';});
  */
-//spl_autoload_register(function($c){@include 'src/'.preg_replace('#\\\|_(?!.+\\\)#','/',$c).'.php';});
 
 /*
  * Client class, base level access
@@ -39,7 +39,15 @@ class Client {
 	protected $activityStream;
 	protected $auditLogs;
 	protected $autocomplete;
-	protected $debug;
+	protected $automations;
+	protected $jobStatuses;
+	protected $macros;
+    protected $oauthClients;
+    protected $oauthTokens;
+    protected $organizationFields;
+    protected $organizations;
+    protected $search;
+    protected $debug;
 
 	public function __construct($subdomain, $username) {
 		$this->subdomain = $subdomain;
@@ -65,6 +73,14 @@ class Client {
 		$this->activityStream = new ActivityStream($this);
 		$this->auditLogs = new AuditLogs($this);
 		$this->autocomplete = new Autocomplete($this);
+		$this->automations = new Automations($this);
+        $this->jobStatuses = new JobStatuses($this);
+        $this->macros = new Macros($this);
+        $this->oauthClients = new OAuthClients($this);
+        $this->oauthTokens = new OAuthTokens($this);
+        $this->organizationFields = new OrganizationFields($this);
+        $this->organizations = new Organizations($this);
+        $this->search = new Search($this);
 	}
 
 	/*
@@ -147,7 +163,9 @@ class Client {
 	}
 
 	/*
-	 * Generic method to object getter
+	 * Generic method to object getter. Since all objects are protected, this method
+     * exposes a getter function with the same name as the protected variable, for example
+     * $client->tickets can be referenced by $client->tickets()
 	 */
 	public function __call($name, $arguments) {
 		if(isset($this->$name)) {
@@ -167,6 +185,9 @@ class Client {
 	public function category($id) { return $this->categories->setLastId($id); }
 	public function activities($id = null) { return ($id != null ? $this->activityStream()->setLastId($id) : $this->activityStream()); }
 	public function activity($id) { return $this->activityStream()->setLastId($id); }
+	public function jobStatus($id) { return $this->jobStatuses()->setLastId($id); }
+	public function search(array $params) { return $this->search->search($params); }
+	public function anonymousSearch(array $params) { return $this->search->anonymousSearch($params); }
 
 }
 

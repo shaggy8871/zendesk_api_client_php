@@ -5,9 +5,9 @@ namespace Zendesk\API\Tests;
 use Zendesk\API\Client;
 
 /**
- * Ticket Comments test class
+ * JobStatuses test class
  */
-class TicketCommentsTest extends \PHPUnit_Framework_TestCase {
+class JobStatusesTest extends \PHPUnit_Framework_TestCase {
 
 	private $client;
 	private $subdomain;
@@ -34,29 +34,19 @@ class TicketCommentsTest extends \PHPUnit_Framework_TestCase {
 
 	public function testAuthToken() {
 		$this->client->setAuth('token', $this->token);
-		$tickets = $this->client->tickets()->findAll();
+		$requests = $this->client->tickets()->findAll();
 		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
 	}
 
 	/**
 	 * @depends testAuthToken
 	 */
-	public function testAll() {
-		$comments = $this->client->ticket(76)->comments()->findAll(); // Don't delete ticket #76
-		$this->assertEquals(is_object($comments), true, 'Should return an object');
-		$this->assertEquals(is_array($comments->comments), true, 'Should return an object containing an array called "comments"');
-		$this->assertGreaterThan(0, $comments->comments[0]->id, 'Returns a non-numeric id in first audit');
-		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
-	}
-
-	/*
-	 * Test make private
-	 */
-	public function testMakePrivate() {
-		$this->markTestSkipped(
-			'Skipped for now because it requires a new (unique) comment id for each test'
-		);
-		$comments = $this->client->ticket(76)->comments(16303442242)->makePrivate();
+	public function testFind() {
+		$id = 'dae40e506a55013162fd3c305bf76b24';
+		$jobStatus = $this->client->jobStatus($id)->find();
+		$this->assertEquals(is_object($jobStatus), true, 'Should return an object');
+		$this->assertNotEmpty($jobStatus->job_status->id, 'Returns no id value for job_status');
+		$this->assertEquals($jobStatus->job_status->status, 'completed', 'Returns an incorrect status for job_status');
 		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
 	}
 

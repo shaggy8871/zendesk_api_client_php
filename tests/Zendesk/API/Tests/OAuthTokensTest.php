@@ -5,9 +5,9 @@ namespace Zendesk\API\Tests;
 use Zendesk\API\Client;
 
 /**
- * Ticket Comments test class
+ * OAuthTokens test class
  */
-class TicketCommentsTest extends \PHPUnit_Framework_TestCase {
+class OAuthTokensTest extends \PHPUnit_Framework_TestCase {
 
 	private $client;
 	private $subdomain;
@@ -34,7 +34,7 @@ class TicketCommentsTest extends \PHPUnit_Framework_TestCase {
 
 	public function testAuthToken() {
 		$this->client->setAuth('token', $this->token);
-		$tickets = $this->client->tickets()->findAll();
+		$requests = $this->client->tickets()->findAll();
 		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
 	}
 
@@ -42,21 +42,33 @@ class TicketCommentsTest extends \PHPUnit_Framework_TestCase {
 	 * @depends testAuthToken
 	 */
 	public function testAll() {
-		$comments = $this->client->ticket(76)->comments()->findAll(); // Don't delete ticket #76
-		$this->assertEquals(is_object($comments), true, 'Should return an object');
-		$this->assertEquals(is_array($comments->comments), true, 'Should return an object containing an array called "comments"');
-		$this->assertGreaterThan(0, $comments->comments[0]->id, 'Returns a non-numeric id in first audit');
+		$tokens = $this->client->oauthTokens()->findAll();
+		$this->assertEquals(is_object($tokens), true, 'Should return an object');
+		$this->assertEquals(is_array($tokens->tokens), true, 'Should return an object containing an array called "tokens"');
+		$this->assertGreaterThan(0, $tokens->tokens[0]->id, 'Returns a non-numeric id for tokens[0]');
 		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
 	}
 
-	/*
-	 * Test make private
+	/**
+	 * @depends testAuthToken
 	 */
-	public function testMakePrivate() {
+	public function testFind() {
+        $id = 941; // don't delete this token
+		$token = $this->client->oauthToken($id)->find();
+		$this->assertEquals(is_object($token), true, 'Should return an object');
+		$this->assertGreaterThan(0, $token->token->id, 'Returns a non-numeric id for token');
+		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
+	}
+
+	/**
+	 * @depends testAuthToken
+	 */
+	public function testRevoke() {
 		$this->markTestSkipped(
-			'Skipped for now because it requires a new (unique) comment id for each test'
+			'Since there\'s no way to create a token programmatically, we can\'t test revoke'
 		);
-		$comments = $this->client->ticket(76)->comments(16303442242)->makePrivate();
+        $id = '123';
+		$topic = $this->client->oauthClient($id)->delete();
 		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
 	}
 
