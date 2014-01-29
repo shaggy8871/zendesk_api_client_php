@@ -161,6 +161,13 @@ class Organizations extends ClientAbstract {
 		return $response;
 	}
 
+	/*
+	 * Syntactic sugar methods:
+	 * Handy aliases:
+	 */
+	public function tickets($id = null) { return ($id != null ? $this->client->tickets()->setLastId($id) : $this->client->tickets()); }
+	public function ticket($id) { return $this->client->tickets()->setLastId($id); }
+
 }
 
 ?>

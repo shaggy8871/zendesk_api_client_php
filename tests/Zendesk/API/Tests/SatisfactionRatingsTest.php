@@ -32,17 +32,15 @@ class SatisfactionRatingsTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals($GLOBALS['USERNAME'] != '', true, 'Expecting GLOBALS[USERNAME] parameter; does phpunit.xml exist?');
 	}
 
-	public function testAuthToken() {
-		$this->client->setAuth('token', $this->token);
-		$requests = $this->client->tickets()->findAll();
-		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
-	}
-
-	/**
-	 * @depends testAuthToken
-	 */
 	public function testCreate() {
-		$rating = $this->client->ticket(1)->satisfactionRatings()->create(array(
+        // Auth as end user
+		$this->username = $GLOBALS['END_USER_USERNAME'];
+		$this->password = $GLOBALS['END_USER_PASSWORD'];
+		$this->token = $GLOBALS['TOKEN'];
+		$this->oAuthToken = $GLOBALS['END_USER_OAUTH_TOKEN'];
+		$this->client = new Client($this->subdomain, $this->username);
+		$this->client->setAuth('password', $this->password);
+		$rating = $this->client->ticket(200)->satisfactionRatings()->create(array(
 			'score' => 'good',
             'comment' => 'Awesome support'
 		));
@@ -60,7 +58,7 @@ class SatisfactionRatingsTest extends \PHPUnit_Framework_TestCase {
 	 * @depends testCreate
 	 */
 	public function testAll($stack) {
-		$ratings = $this->client->ticket(1)->satisfactionRatings()->findAll();
+		$ratings = $this->client->ticket(200)->satisfactionRatings()->findAll();
 		$this->assertEquals(is_object($ratings), true, 'Should return an object');
 		$this->assertEquals(is_array($ratings->satisfaction_ratings), true, 'Should return an object containing an array called "satisfaction_ratings"');
 		$this->assertGreaterThan(0, $ratings->satisfaction_ratings[0]->id, 'Returns a non-numeric id for satisfaction_ratings[0]');
@@ -73,12 +71,10 @@ class SatisfactionRatingsTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testFind($stack) {
 		$id = array_pop($stack);
-		$rating = $this->client->ticket(1)->satisfactionRating($id)->find();
-		$this->assertEquals(is_object($ratings), true, 'Should return an object');
-		$this->assertGreaterThan(0, $ratings->satisfaction_rating->id, 'Returns a non-numeric id for satisfaction_rating');
+		$rating = $this->client->ticket(200)->satisfactionRating($id)->find();
+		$this->assertEquals(is_object($rating), true, 'Should return an object');
+		$this->assertGreaterThan(0, $rating->satisfaction_rating->id, 'Returns a non-numeric id for satisfaction_rating');
 		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
-		$stack = array($id);
-		return $stack;
 	}
 
 }

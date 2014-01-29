@@ -14,6 +14,10 @@ class SatisfactionRatings extends ClientAbstract {
 	 * List all satisfaction ratings
 	 */
 	public function findAll(array $params = array()) {
+		if($this->client->tickets()->getLastId() != null) {
+			$params['ticket_id'] = $this->client->tickets()->getLastId();
+			$this->client->tickets()->setLastId(null);
+		}
 		$endPoint = Http::prepare('satisfaction_ratings.json');
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
@@ -44,7 +48,7 @@ class SatisfactionRatings extends ClientAbstract {
 	}
 
 	/*
-	 * Create a new satisfaction rating
+	 * Create a new satisfaction rating (authorised end user credentials only please!)
 	 */
 	public function create(array $params) {
 		if($this->client->tickets()->getLastId() != null) {
@@ -53,10 +57,8 @@ class SatisfactionRatings extends ClientAbstract {
 		}
 		$endPoint = Http::prepare('tickets/'.$params['ticket_id'].'/satisfaction_rating.json');
 		$response = Http::send($this->client, $endPoint, array (self::OBJ_NAME => $params), 'POST');
-        print_r($this->client->getDebug());
-        print_r($response);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
-			throw new ResponseException(__METHOD__);
+			throw new ResponseException(__METHOD__, ($this->client->getDebug()->lastResponseCode == 403 ? ' (hint: you need to authenticate as a verified end user for this method)' : ''));
 		}
 		return $response;
 	}

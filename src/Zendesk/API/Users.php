@@ -279,6 +279,8 @@ class Users extends ClientAbstract {
 	 * Syntactic sugar methods:
 	 * Handy aliases:
 	 */
+	public function tickets($id = null) { return ($id != null ? $this->client->tickets()->setLastId($id) : $this->client->tickets()); }
+	public function ticket($id) { return $this->client->tickets()->setLastId($id); }
 	public function identities($id = null) { return ($id != null ? $this->identities->setLastId($id) : $this->identities); }
 	public function identity($id) { return $this->identities->setLastId($id); }
 	public function groups($id = null) { return ($id != null ? $this->client->groups()->setLastId($id) : $this->client->groups()); }

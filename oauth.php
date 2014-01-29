@@ -1,15 +1,18 @@
 <?php
-require_once ("lib/zendesk_api.php");
+include("vendor/autoload.php");
 
-$subdomain = "subdomain";	// Your Zendesk subdomain
-$username = "username";		// Your Zendesk login
-$oAuthId = "client_id";		// The value you entered into the OAuth 'Unique Identifier' field
-$oAuthSecret = "secret";	// The OAuth secret given to you by Zendesk
+use Zendesk\API\Client as ZendeskAPI;
+use Zendesk\API\Http;
+
+$subdomain = "subdomain";       // Your Zendesk subdomain
+$username = "username";         // Your Zendesk login
+$oAuthId = "oauth_id";          // The value you entered into the OAuth 'Unique Identifier' field
+$oAuthSecret = "oauth_secret";	// The OAuth secret given to you by Zendesk
 
 $client = new ZendeskAPI($subdomain, $username);
 if ($_REQUEST['code']) {
 	$response = Http::oauth($client, $_REQUEST['code'], $oAuthId, $oAuthSecret);
-	if (($client->lastResponseCode == 200) && ($response->access_token)) {
+	if (($client->getDebug()->lastResponseCode == 200) && ($response->access_token)) {
 		echo "<h1>Success!</h1>";
 		echo "<p>Your OAuth token is: ".$response->access_token."</p>";
 		echo "<p>Use this code before any other API call:</p>";

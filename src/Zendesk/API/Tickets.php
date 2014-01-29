@@ -30,6 +30,14 @@ class Tickets extends ClientAbstract {
 	 * Returns all recent tickets overall, per user or per organization
 	 */
 	public function findAll(array $params = array ()) {
+		if($this->client->organizations()->getLastId() != null) {
+			$params['organization_id'] = $this->client->organizations()->getLastId();
+			$this->client->organizations()->setLastId(null);
+		}
+		if($this->client->users()->getLastId() != null) {
+			$params['user_id'] = $this->client->users()->getLastId();
+			$this->client->users()->setLastId(null);
+		}
 		$endPoint = Http::prepare(
 				(isset($params['organization_id']) ? 'organizations/'.$params['organization_id'].'/tickets' : 
 				(isset($params['user_id']) ? 'users/'.$params['user_id'].'/tickets/'.($params['ccd'] ? 'ccd' : 'requested') : 
