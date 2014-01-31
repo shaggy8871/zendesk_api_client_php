@@ -21,7 +21,7 @@ class Http {
 
 		$url = $client->getApiUrl().$endPoint;
 		$method = strtoupper($method);
-		$json = ($json == null ? (object) null : (($method != 'GET') && ($contentType == 'application/json') ? json_encode($json) : $json));
+		$json = ($json == null ? (object) null : (($method != 'GET') && ($method != 'DELETE') && ($contentType == 'application/json') ? json_encode($json) : $json));
 
 		if($method == 'POST') {
 			$curl = curl_init($url);

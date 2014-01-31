@@ -145,6 +145,9 @@ class Topics extends ClientAbstract {
 		}
 	}
 
+	public function tags($id = null) { return ($id != null ? $this->client->tags()->setLastId($id) : $this->client->tags()); }
+	public function tag($id) { return $this->client->tags()->setLastId($id); }
+
 }
 
 ?>

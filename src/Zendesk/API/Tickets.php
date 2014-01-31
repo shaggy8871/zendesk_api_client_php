@@ -346,6 +346,8 @@ class Tickets extends ClientAbstract {
 	 * Syntactic sugar methods:
 	 * Handy aliases:
 	 */
+	public function tags($id = null) { return ($id != null ? $this->client->tags()->setLastId($id) : $this->client->tags()); }
+	public function tag($id) { return $this->client->tags()->setLastId($id); }
 	public function import(array $params) { return $this->import->import($params); }
 	public function attach(array $params = array()) {
 		if(!$params['file']) {

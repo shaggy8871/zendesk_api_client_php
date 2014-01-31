@@ -47,6 +47,13 @@ class Client {
     protected $organizationFields;
     protected $organizations;
     protected $search;
+    protected $sharingAgreements;
+    protected $suspendedTickets;
+    protected $tags;
+    protected $targets;
+    protected $triggers;
+    protected $voice;
+    protected $locales;
     protected $debug;
 
 	public function __construct($subdomain, $username) {
@@ -81,6 +88,13 @@ class Client {
         $this->organizationFields = new OrganizationFields($this);
         $this->organizations = new Organizations($this);
         $this->search = new Search($this);
+        $this->sharingAgreements = new SharingAgreements($this);
+        $this->suspendedTickets = new SuspendedTickets($this);
+        $this->tags = new Tags($this);
+        $this->targets = new Targets($this);
+        $this->triggers = new Triggers($this);
+        $this->voice = new Voice($this);
+        $this->locales = new Locales($this);
 	}
 
 	/*

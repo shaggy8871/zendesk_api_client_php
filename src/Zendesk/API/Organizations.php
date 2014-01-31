@@ -167,6 +167,8 @@ class Organizations extends ClientAbstract {
 	 */
 	public function tickets($id = null) { return ($id != null ? $this->client->tickets()->setLastId($id) : $this->client->tickets()); }
 	public function ticket($id) { return $this->client->tickets()->setLastId($id); }
+	public function tags($id = null) { return ($id != null ? $this->client->tags()->setLastId($id) : $this->client->tags()); }
+	public function tag($id) { return $this->client->tags()->setLastId($id); }
 
 }
 
