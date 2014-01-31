@@ -38,5 +38,3 @@ class VoiceAgents extends ClientAbstract {
 	}
 
 }
-
-?>

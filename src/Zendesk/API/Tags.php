@@ -7,7 +7,7 @@ namespace Zendesk\API;
  */
 class Tags extends ClientAbstract {
 
-    const OBJ_NAME = 'tag';
+    const OBJ_NAME = 'tags';
     const OBJ_NAME_PLURAL = 'tags';
 
 	/*
@@ -82,7 +82,7 @@ class Tags extends ClientAbstract {
                 (isset($params['topic_id']) ? 'topics/'.$params['topic_id'].'/tags.json' : 
                 (isset($params['organization_id']) ? 'organizations/'.$params['organization_id'].'/tags.json' : '')))
             );
-		$response = Http::send($this->client, $endPoint, array(self::OBJ_NAME_PLURAL => $params['tags']), 'POST');
+		$response = Http::send($this->client, $endPoint, array(self::OBJ_NAME => $params['tags']), 'POST');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -116,7 +116,7 @@ class Tags extends ClientAbstract {
                 (isset($params['topic_id']) ? 'topics/'.$params['topic_id'].'/tags.json' : 
                 (isset($params['organization_id']) ? 'organizations/{id}/tags.json' : '')))
             );
-        $response = Http::send($this->client, $endPoint, array(self::OBJ_NAME_PLURAL => $params['tags']), 'PUT');
+        $response = Http::send($this->client, $endPoint, array(self::OBJ_NAME => $params['tags']), 'PUT');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -150,7 +150,7 @@ class Tags extends ClientAbstract {
                 (isset($params['topic_id']) ? 'topics/'.$params['topic_id'].'/tags.json' : 
                 (isset($params['organization_id']) ? 'organizations/{id}/tags.json' : '')))
             );
-        $response = Http::send($this->client, $endPoint, array(self::OBJ_NAME_PLURAL => $params['tags']), 'DELETE');
+        $response = Http::send($this->client, $endPoint, array(self::OBJ_NAME => $params['tags']), 'DELETE');
 		if ($this->client->getDebug()->lastResponseCode != 200) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -167,5 +167,3 @@ class Tags extends ClientAbstract {
 	public function remove(array $params) { return $this->delete($params); }
 
 }
-
-?>

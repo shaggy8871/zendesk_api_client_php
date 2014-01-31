@@ -7,6 +7,9 @@ namespace Zendesk\API;
  */
 class AuditLogs extends ClientAbstract {
 
+    const OBJ_NAME = 'audit_log';
+    const OBJ_NAME_PLURAL = 'audit_logs';
+
 	/*
 	 * List all audit logs
 	 */
@@ -40,18 +43,4 @@ class AuditLogs extends ClientAbstract {
 		return $response;
 	}
 
-	/*
-	 * Create a new forum
-	 */
-	public function create(array $params) {
-		$endPoint = Http::prepare('forums.json');
-		$response = Http::send($this->client, $endPoint, array ('forum' => $params), 'POST');
-		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
-			throw new ResponseException(__METHOD__);
-		}
-		return $response;
-	}
-
 }
-
-?>

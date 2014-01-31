@@ -20,5 +20,3 @@ class VoiceTickets extends ClientAbstract {
 	}
 
 }
-
-?>

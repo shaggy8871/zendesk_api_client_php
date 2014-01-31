@@ -7,12 +7,18 @@ namespace Zendesk\API;
  */
 class ActivityStream extends ClientAbstract {
 
+    const OBJ_NAME = 'activity';
+    const OBJ_NAME_PLURAL = 'activities';
+
 	/*
 	 * Returns a list of activities
 	 */
 	public function findAll(array $params = array ()) {
 		$endPoint = Http::prepare('activities.json');
 		$response = Http::send($this->client, $endPoint);
+        echo __METHOD__;
+        print_r($this->client->getDebug());
+        print_r($response);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -28,7 +34,7 @@ class ActivityStream extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$endPoint = Http::prepare('activities/'.$params['id'].'.json');
@@ -41,5 +47,3 @@ class ActivityStream extends ClientAbstract {
 	}
 
 }
-
-?>

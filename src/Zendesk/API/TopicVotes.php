@@ -7,6 +7,9 @@ namespace Zendesk\API;
  */
 class TopicVotes extends ClientAbstract {
 
+    const OBJ_NAME = 'topic_vote';
+    const OBJ_NAME_PLURAL = 'topic_votes';
+
 	/*
 	 * List all topic votes
 	 */
@@ -93,7 +96,7 @@ class TopicVotes extends ClientAbstract {
 			$this->client->users()->setLastId(null);
 		}
 		if(!$this->hasKeys($params, array('topic_id'))) {
-			throw new MissingParametersException(__METHOD__, array('id'));
+			throw new MissingParametersException(__METHOD__, array('topic_id'));
 		}
 		$endPoint = Http::prepare('topics/'.$params['topic_id'].'/vote.json'.(isset($params['user_id']) ? '?user_id='.$params['user_id'] : ''));
 		$response = Http::send($this->client, $endPoint, null, 'DELETE');
@@ -104,5 +107,3 @@ class TopicVotes extends ClientAbstract {
 	}
 
 }
-
-?>

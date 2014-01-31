@@ -8,13 +8,16 @@ namespace Zendesk\API;
  */
 class Requests extends ClientAbstract {
 
+    const OBJ_NAME = 'request';
+    const OBJ_NAME_PLURAL = 'requests';
+
 	/*
 	 * Public objects:
 	 */
 	protected $comments;
 
 	public function __construct($client) {
-		$this->client = $client;
+		parent::__construct($client);
 		$this->comments = new RequestComments($client);
 	}
 
@@ -45,10 +48,10 @@ class Requests extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
-		$endPoint = Http::prepare('requests/'.$params['id'].'.json');
+		$endPoint = Http::prepare('requests/'.$params['id'].'.json', ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload()));
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -62,7 +65,7 @@ class Requests extends ClientAbstract {
 	 */
 	public function create(array $params) {
 		$endPoint = Http::prepare('requests.json');
-		$response = Http::send($this->client, $endPoint, array ('request' => $params), 'POST');
+		$response = Http::send($this->client, $endPoint, array (self::OBJ_NAME => $params), 'POST');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -77,13 +80,13 @@ class Requests extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$id = $params['id'];
 		unset($params['id']);
 		$endPoint = Http::prepare('requests/'.$id.'.json');
-		$response = Http::send($this->client, $endPoint, array ('request' => $params), 'PUT');
+		$response = Http::send($this->client, $endPoint, array (self::OBJ_NAME => $params), 'PUT');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -94,15 +97,10 @@ class Requests extends ClientAbstract {
 	 * Syntactic sugar methods:
 	 * Handy aliases:
 	 */
-	public function comments(array $params = array()) { return $this->comments->findAll($params); }
-	/*
-	 * Helpers:
-	 */
+	public function comments($id = null) { return ($id != null ? $this->comments->setLastId($id) : $this->comments); }
 	public function comment($id) { return $this->comments->setLastId($id); }
 	public function open(array $params = array()) { $params['open'] = true; return $this->findAll($params); }
 	public function solved(array $params = array()) { $params['solved'] = true; return $this->findAll($params); }
 	public function ccd(array $params = array()) { $params['ccd'] = true; return $this->findAll($params); }
 
 }
-
-?>

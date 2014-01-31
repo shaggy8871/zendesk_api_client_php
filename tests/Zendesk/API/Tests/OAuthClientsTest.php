@@ -74,7 +74,7 @@ class OAuthClientsTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testFind($stack) {
 		$id = array_pop($stack);
-		$client = $this->client->oauthClients($id)->find();
+		$client = $this->client->oauthClient($id)->find();
 		$this->assertEquals(is_object($client), true, 'Should return an object');
 		$this->assertGreaterThan(0, $client->client->id, 'Returns a non-numeric id for client');
 		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
@@ -87,7 +87,7 @@ class OAuthClientsTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testUpdate(array $stack) {
 		$id = array_pop($stack);
-		$client = $this->client->oauthClients($id)->update(array(
+		$client = $this->client->oauthClient($id)->update(array(
 			'name' => 'New Client Name'
 		));
 		$this->assertEquals(is_object($client), true, 'Should return an object');

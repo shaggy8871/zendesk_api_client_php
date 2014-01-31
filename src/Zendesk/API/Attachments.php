@@ -16,7 +16,7 @@ class Attachments extends ClientAbstract {
 	 *		'optional_token' - an existing token
 	 */
 	public function upload(array $params) {
-		if(!$params['file']) {
+		if(!$this->hasKeys($params, array('file'))) {
 			throw new MissingParametersException(__METHOD__, array('file'));
 		}
 		if(!file_exists($params['file'])) {
@@ -37,7 +37,7 @@ class Attachments extends ClientAbstract {
 	 *		'id' - the id of the attachment
 	 */
 	public function delete(array $params) {
-		if((!$params['token']) && (!$params['id'])) {
+		if(!$this->hasAnyKey($params, array('id', 'token'))) {
 			throw new MissingParametersException(__METHOD__, array('id', 'token'));
 		}
 		$endPoint = ($params['token'] ? 'uploads/'.$params['token'] : 'attachments/'.$params['id']).'.json';
@@ -54,18 +54,16 @@ class Attachments extends ClientAbstract {
 	 *		'id' - the id of the attachment
 	 */
 	public function find(array $params) {
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$id = $params['id'];
 		$endPoint = 'attachments/'.$id.'.json';
 		$response = Http::send($this->client, $endPoint);
-		if ($this->client->getDebug()->lastResponseCode != 200) {
+		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
 		return $response;
 	}
 
 }
-
-?>

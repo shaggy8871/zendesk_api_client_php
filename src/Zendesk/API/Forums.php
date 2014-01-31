@@ -7,13 +7,13 @@ namespace Zendesk\API;
  */
 class Forums extends ClientAbstract {
 
+    const OBJ_NAME = 'forum';
+    const OBJ_NAME_PLURAL = 'forums';
+
 	protected $subscriptions;
 
 	public function __construct($client) {
 		parent::__construct($client);
-		/*
-		 * Additional sub-objects
-		 */
 		$this->subscriptions = new ForumSubscriptions($client);
 	}
 
@@ -55,7 +55,7 @@ class Forums extends ClientAbstract {
 	 */
 	public function create(array $params) {
 		$endPoint = Http::prepare('forums.json');
-		$response = Http::send($this->client, $endPoint, array ('forum' => $params), 'POST');
+		$response = Http::send($this->client, $endPoint, array(self::OBJ_NAME => $params), 'POST');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -70,13 +70,13 @@ class Forums extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$id = $params['id'];
 		unset($params['id']);
 		$endPoint = Http::prepare('forums/'.$id.'.json');
-		$response = Http::send($this->client, $endPoint, array ('forum' => $params), 'PUT');
+		$response = Http::send($this->client, $endPoint, array(self::OBJ_NAME => $params), 'PUT');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -111,5 +111,3 @@ class Forums extends ClientAbstract {
 
 
 }
-
-?>

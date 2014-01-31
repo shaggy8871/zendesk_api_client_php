@@ -7,6 +7,9 @@ namespace Zendesk\API;
  */
 class OAuthClients extends ClientAbstract {
 
+    const OBJ_NAME = 'client';
+    const OBJ_NAME_PLURAL = 'clients';
+
 	/*
 	 * List all clients
 	 */
@@ -45,7 +48,7 @@ class OAuthClients extends ClientAbstract {
 	 */
 	public function create(array $params) {
 		$endPoint = Http::prepare('oauth/clients.json');
-		$response = Http::send($this->client, $endPoint, array('client' => $params), 'POST');
+		$response = Http::send($this->client, $endPoint, array(self::OBJ_NAME => $params), 'POST');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -65,7 +68,10 @@ class OAuthClients extends ClientAbstract {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$endPoint = Http::prepare('oauth/clients/'.$params['id'].'.json');
-		$response = Http::send($this->client, $endPoint, array('client' => $params), 'PUT');
+		$response = Http::send($this->client, $endPoint, array(self::OBJ_NAME => $params), 'PUT');
+        echo __METHOD__;
+        print_r($this->client->getDebug());
+        print_r($response);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -94,5 +100,3 @@ class OAuthClients extends ClientAbstract {
 	}
 
 }
-
-?>

@@ -204,5 +204,3 @@ class Client {
 	public function anonymousSearch(array $params) { return $this->search->anonymousSearch($params); }
 
 }
-
-?>

@@ -40,5 +40,3 @@ class Voice extends ClientAbstract {
     }
 
 }
-
-?>

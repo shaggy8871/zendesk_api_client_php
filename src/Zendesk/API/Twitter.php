@@ -7,6 +7,9 @@ namespace Zendesk\API;
  */
 class Twitter extends ClientAbstract {
 
+    const OBJ_NAME = 'monitored_twitter_handle';
+    const OBJ_NAME_PLURAL = 'monitored_twitter_handles';
+
 	/*
 	 * Return a list of monitored handles
 	 */
@@ -39,5 +42,3 @@ class Twitter extends ClientAbstract {
 	}
 
 }
-
-?>

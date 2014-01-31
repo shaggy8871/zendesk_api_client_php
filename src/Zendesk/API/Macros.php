@@ -7,6 +7,9 @@ namespace Zendesk\API;
  */
 class Macros extends ClientAbstract {
 
+    const OBJ_NAME = 'macro';
+    const OBJ_NAME_PLURAL = 'macros';
+
 	/*
 	 * List all macros
 	 */
@@ -45,7 +48,7 @@ class Macros extends ClientAbstract {
 	 */
 	public function create(array $params) {
 		$endPoint = Http::prepare('macros.json');
-		$response = Http::send($this->client, $endPoint, array('macro' => $params), 'POST');
+		$response = Http::send($this->client, $endPoint, array(self::OBJ_NAME => $params), 'POST');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -65,7 +68,7 @@ class Macros extends ClientAbstract {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$endPoint = Http::prepare('macros/'.$params['id'].'.json');
-		$response = Http::send($this->client, $endPoint, array('macro' => $params), 'PUT');
+		$response = Http::send($this->client, $endPoint, array(self::OBJ_NAME => $params), 'PUT');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -118,5 +121,3 @@ class Macros extends ClientAbstract {
 	}
 
 }
-
-?>

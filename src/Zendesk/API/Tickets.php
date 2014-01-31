@@ -7,6 +7,9 @@ namespace Zendesk\API;
  */
 class Tickets extends ClientAbstract {
 
+    const OBJ_NAME = 'ticket';
+    const OBJ_NAME_PLURAL = 'tickets';
+
 	protected $audits;
 	protected $comments;
 	protected $metrics;
@@ -59,7 +62,7 @@ class Tickets extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$endPoint = Http::prepare((is_array($params['id']) ? 'tickets/show_many.json?ids='.implode(',', $params['id']) : 'tickets/'.$params['id'].'.json'), ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload()));
@@ -79,7 +82,7 @@ class Tickets extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$endPoint = Http::prepare('channels/twitter/tickets/'.$params['id'].'/statuses.json'.(is_array($params['comment_ids']) ? '?'.implode(',', $params['comment_ids']) : ''), ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload()));
@@ -100,7 +103,7 @@ class Tickets extends ClientAbstract {
 			$this->lastAttachments = array();
 		}
 		$endPoint = Http::prepare('tickets.json');
-		$response = Http::send($this->client, $endPoint, array ('ticket' => $params), 'POST');
+		$response = Http::send($this->client, $endPoint, array (self::OBJ_NAME => $params), 'POST');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -115,7 +118,7 @@ class Tickets extends ClientAbstract {
 			throw new MissingParametersException(__METHOD__, array('twitter_status_message_id', 'monitored_twitter_handle_id'));
 		}
 		$endPoint = Http::prepare('channels/twitter/tickets.json');
-		$response = Http::send($this->client, $endPoint, array ('ticket' => $params), 'POST');
+		$response = Http::send($this->client, $endPoint, array (self::OBJ_NAME => $params), 'POST');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__, ($this->client->getDebug()->lastResponseCode == 422 ? ' (hint: you can\'t create two tickets from the same tweet)' : ''));
 		}
@@ -130,7 +133,7 @@ class Tickets extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		if(count($this->lastAttachments)) {
@@ -140,7 +143,7 @@ class Tickets extends ClientAbstract {
 		$id = $params['id'];
 		unset($params['id']);
 		$endPoint = Http::prepare((is_array($id) ? 'tickets/update_many.json?ids='.implode(',', $id) : 'tickets/'.$id.'.json'));
-		$response = Http::send($this->client, $endPoint, array ('ticket' => $params), 'PUT');
+		$response = Http::send($this->client, $endPoint, array (self::OBJ_NAME => $params), 'PUT');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__, ($this->client->getDebug()->lastResponseCode == 422 ? ' (hint: you can\'t update a closed ticket)' : ''));
 		}
@@ -155,7 +158,7 @@ class Tickets extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$id = $params['id'];
@@ -176,7 +179,7 @@ class Tickets extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$id = $params['id'];
@@ -197,7 +200,7 @@ class Tickets extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$id = $params['id'];
@@ -217,7 +220,7 @@ class Tickets extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$id = $params['id'];
@@ -238,7 +241,7 @@ class Tickets extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$id = $params['id'];
@@ -259,7 +262,7 @@ class Tickets extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$id = $params['id'];
@@ -280,11 +283,8 @@ class Tickets extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
-			throw new MissingParametersException(__METHOD__, array('id'));
-		}
-		if(!$params['text']) {
-			throw new MissingParametersException(__METHOD__, array('text'));
+		if(!$this->hasKeys($params, array('id', 'text'))) {
+			throw new MissingParametersException(__METHOD__, array('id', 'text'));
 		}
 		$id = $params['id'];
 		$endPoint = Http::prepare('tickets/'.$id.'/problems/autocomplete.json');
@@ -350,7 +350,7 @@ class Tickets extends ClientAbstract {
 	public function tag($id) { return $this->client->tags()->setLastId($id); }
 	public function import(array $params) { return $this->import->import($params); }
 	public function attach(array $params = array()) {
-		if(!$params['file']) {
+		if(!$this->hasKeys($params, array('file'))) {
 			throw new MissingParametersException(__METHOD__, array('file'));
 		}
 		$upload = $this->client->attachments()->upload($params);
@@ -362,5 +362,3 @@ class Tickets extends ClientAbstract {
 	}
 
 }
-
-?>

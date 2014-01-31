@@ -7,6 +7,9 @@ namespace Zendesk\API;
  */
 class Locales extends ClientAbstract {
 
+    const OBJ_NAME = 'locale';
+    const OBJ_NAME_PLURAL = 'locales';
+
 	/*
 	 * List all locales
 	 */
@@ -66,5 +69,3 @@ class Locales extends ClientAbstract {
 	public function current() { return $this->findAll(array('current' => true)); }
 
 }
-
-?>

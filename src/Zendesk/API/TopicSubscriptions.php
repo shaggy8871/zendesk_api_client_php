@@ -7,6 +7,9 @@ namespace Zendesk\API;
  */
 class TopicSubscriptions extends ClientAbstract {
 
+    const OBJ_NAME = 'topic_subscription';
+    const OBJ_NAME_PLURAL = 'topic_subscriptions';
+
 	/*
 	 * List all topic subscriptions
 	 */
@@ -62,7 +65,7 @@ class TopicSubscriptions extends ClientAbstract {
 			throw new MissingParametersException(__METHOD__, array('topic_id', 'user_id'));
 		}
 		$endPoint = Http::prepare('topic_subscriptions.json');
-		$response = Http::send($this->client, $endPoint, array ('topic_subscription' => $params), 'POST');
+		$response = Http::send($this->client, $endPoint, array(self::OBJ_NAME => $params), 'POST');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -89,5 +92,3 @@ class TopicSubscriptions extends ClientAbstract {
 	}
 
 }
-
-?>

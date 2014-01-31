@@ -106,5 +106,3 @@ class Apps extends ClientAbstract {
 	public function installation($id) { return $this->installations->setLastId($id); }
 
 }
-
-?>

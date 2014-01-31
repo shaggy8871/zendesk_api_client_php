@@ -7,18 +7,18 @@ namespace Zendesk\API;
  */
 class TicketComments extends ClientAbstract {
 
+    const OBJ_NAME = 'comment';
+    const OBJ_NAME_PLURAL = 'comments';
+
 	/*
 	 * Returns all comments for a particular ticket
 	 */
 	public function findAll(array $params = array()) {
-		if($this->lastId != null) {
-			throw new CustomException('Calls to '.__METHOD__.' may not chain from the comment() helper. Try $client->ticket(ticket_id)->comments() instead.');
-		}
 		if($this->client->tickets()->getLastId() != null) {
 			$params['ticket_id'] = $this->client->tickets()->getLastId();
 			$this->client->tickets()->setLastId(null);
 		}
-		if(!$params['ticket_id']) {
+		if(!$this->hasKeys($params, array('ticket_id'))) {
 			throw new MissingParametersException(__METHOD__, array('ticket_id'));
 		}
 		$endPoint = Http::prepare('tickets/'.$params['ticket_id'].'/comments.json');
@@ -42,11 +42,8 @@ class TicketComments extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['ticket_id']) {
-			throw new MissingParametersException(__METHOD__, array('ticket_id'));
-		}
-		if(!$params['id']) {
-			throw new MissingParametersException(__METHOD__, array('id'));
+		if(!$this->hasKeys($params, array('id', 'ticket_id'))) {
+			throw new MissingParametersException(__METHOD__, array('id', 'ticket_id'));
 		}
 		$endPoint = Http::prepare('tickets/'.$params['ticket_id'].'/comments/'.$params['id'].'/make_private.json');
 		$response = Http::send($this->client, $endPoint, null, 'PUT');
@@ -66,5 +63,3 @@ class TicketComments extends ClientAbstract {
 	}
 
 }
-
-?>

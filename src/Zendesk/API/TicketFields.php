@@ -7,6 +7,9 @@ namespace Zendesk\API;
  */
 class TicketFields extends ClientAbstract {
 
+    const OBJ_NAME = 'ticket_field';
+    const OBJ_NAME_PLURAL = 'ticket_fields';
+
 	/*
 	 * List all ticket fields
 	 */
@@ -28,7 +31,7 @@ class TicketFields extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$endPoint = Http::prepare('ticket_fields/'.$params['id'].'.json');
@@ -45,7 +48,7 @@ class TicketFields extends ClientAbstract {
 	 */
 	public function create(array $params) {
 		$endPoint = Http::prepare('ticket_fields.json');
-		$response = Http::send($this->client, $endPoint, array ('ticket_field' => $params), 'POST');
+		$response = Http::send($this->client, $endPoint, array(self::OBJ_NAME => $params), 'POST');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -60,13 +63,13 @@ class TicketFields extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$id = $params['id'];
 		unset($params['id']);
 		$endPoint = Http::prepare('ticket_fields/'.$id.'.json');
-		$response = Http::send($this->client, $endPoint, array ('ticket_field' => $params), 'PUT');
+		$response = Http::send($this->client, $endPoint, array(self::OBJ_NAME => $params), 'PUT');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -81,7 +84,7 @@ class TicketFields extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$id = $params['id'];
@@ -94,5 +97,3 @@ class TicketFields extends ClientAbstract {
 	}
 
 }
-
-?>

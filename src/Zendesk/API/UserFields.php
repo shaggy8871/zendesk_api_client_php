@@ -7,6 +7,9 @@ namespace Zendesk\API;
  */
 class UserFields extends ClientAbstract {
 
+    const OBJ_NAME = 'user_field';
+    const OBJ_NAME_PLURAL = 'user_fields';
+
 	/*
 	 * List all user fields
 	 */
@@ -45,7 +48,7 @@ class UserFields extends ClientAbstract {
 	 */
 	public function create(array $params) {
 		$endPoint = Http::prepare('user_fields.json');
-		$response = Http::send($this->client, $endPoint, array ('user_field' => $params), 'POST');
+		$response = Http::send($this->client, $endPoint, array(self::OBJ_NAME => $params), 'POST');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -66,7 +69,7 @@ class UserFields extends ClientAbstract {
 		$id = $params['id'];
 		unset($params['id']);
 		$endPoint = Http::prepare('user_fields/'.$id.'.json');
-		$response = Http::send($this->client, $endPoint, array ('user_field' => $params), 'PUT');
+		$response = Http::send($this->client, $endPoint, array(self::OBJ_NAME => $params), 'PUT');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -106,5 +109,3 @@ class UserFields extends ClientAbstract {
 	}
 
 }
-
-?>

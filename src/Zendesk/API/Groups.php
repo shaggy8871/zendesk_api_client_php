@@ -7,6 +7,9 @@ namespace Zendesk\API;
  */
 class Groups extends ClientAbstract {
 
+    const OBJ_NAME = 'group';
+    const OBJ_NAME_PLURAL = 'groups';
+
 	/*
 	 * List all groups
 	 */
@@ -17,7 +20,8 @@ class Groups extends ClientAbstract {
 		}
 		$endPoint = Http::prepare(
 				(isset($params['user_id']) ? 'users/'.$params['user_id'].'/groups.json' : 
-				(isset($params['assignable']) ? 'groups/assignable.json' : 'groups.json'))
+				(isset($params['assignable']) ? 'groups/assignable.json' : 'groups.json')), 
+               ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload())
 		);
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
@@ -38,7 +42,7 @@ class Groups extends ClientAbstract {
 		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
-		$endPoint = Http::prepare('groups/'.$params['id'].'.json');
+		$endPoint = Http::prepare('groups/'.$params['id'].'.json', ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload()));
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -52,7 +56,7 @@ class Groups extends ClientAbstract {
 	 */
 	public function create(array $params) {
 		$endPoint = Http::prepare('groups.json');
-		$response = Http::send($this->client, $endPoint, array ('group' => $params), 'POST');
+		$response = Http::send($this->client, $endPoint, array(self::OBJ_NAME => $params), 'POST');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -67,13 +71,13 @@ class Groups extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$id = $params['id'];
 		unset($params['id']);
 		$endPoint = Http::prepare('groups/'.$id.'.json');
-		$response = Http::send($this->client, $endPoint, array ('group' => $params), 'PUT');
+		$response = Http::send($this->client, $endPoint, array(self::OBJ_NAME => $params), 'PUT');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -103,5 +107,3 @@ class Groups extends ClientAbstract {
 	public function member($id) { return $this->client->groupMemberships()->setLastId($id); }
 
 }
-
-?>

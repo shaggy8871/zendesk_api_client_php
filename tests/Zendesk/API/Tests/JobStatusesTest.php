@@ -42,6 +42,9 @@ class JobStatusesTest extends \PHPUnit_Framework_TestCase {
 	 * @depends testAuthToken
 	 */
 	public function testFind() {
+		$this->markTestSkipped(
+			'Skipped for now because it requires a new job ID each time'
+		);
 		$id = 'dae40e506a55013162fd3c305bf76b24';
 		$jobStatus = $this->client->jobStatus($id)->find();
 		$this->assertEquals(is_object($jobStatus), true, 'Should return an object');

@@ -7,6 +7,9 @@ namespace Zendesk\API;
  */
 class Categories extends ClientAbstract {
 
+    const OBJ_NAME = 'category';
+    const OBJ_NAME_PLURAL = 'categories';
+
 	/*
 	 * List all categories
 	 */
@@ -45,7 +48,7 @@ class Categories extends ClientAbstract {
 	 */
 	public function create(array $params) {
 		$endPoint = Http::prepare('categories.json');
-		$response = Http::send($this->client, $endPoint, array ('category' => $params), 'POST');
+		$response = Http::send($this->client, $endPoint, array(self::OBJ_NAME => $params), 'POST');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -60,13 +63,13 @@ class Categories extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$id = $params['id'];
 		unset($params['id']);
 		$endPoint = Http::prepare('categories/'.$id.'.json');
-		$response = Http::send($this->client, $endPoint, array ('category' => $params), 'PUT');
+		$response = Http::send($this->client, $endPoint, array(self::OBJ_NAME => $params), 'PUT');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -93,5 +96,3 @@ class Categories extends ClientAbstract {
 	}
 
 }
-
-?>

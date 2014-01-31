@@ -7,6 +7,9 @@ namespace Zendesk\API;
  */
 class AppInstallations extends ClientAbstract {
 
+    const OBJ_NAME = 'installation';
+    const OBJ_NAME_PLURAL = 'installations';
+
 	/*
 	 * List all app installations
 	 */
@@ -61,5 +64,3 @@ class AppInstallations extends ClientAbstract {
 	}
 
 }
-
-?>

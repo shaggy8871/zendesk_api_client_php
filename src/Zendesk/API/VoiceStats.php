@@ -27,5 +27,3 @@ class VoiceStats extends ClientAbstract {
 	}
 
 }
-
-?>

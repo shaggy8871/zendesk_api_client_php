@@ -12,5 +12,3 @@ class MissingParametersException extends \Exception {
 	}
 
 }
-
-?>

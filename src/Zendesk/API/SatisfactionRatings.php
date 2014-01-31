@@ -56,7 +56,7 @@ class SatisfactionRatings extends ClientAbstract {
 			$this->client->tickets()->setLastId(null);
 		}
 		$endPoint = Http::prepare('tickets/'.$params['ticket_id'].'/satisfaction_rating.json');
-		$response = Http::send($this->client, $endPoint, array (self::OBJ_NAME => $params), 'POST');
+		$response = Http::send($this->client, $endPoint, array(self::OBJ_NAME => $params), 'POST');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__, ($this->client->getDebug()->lastResponseCode == 403 ? ' (hint: you need to authenticate as a verified end user for this method)' : ''));
 		}
@@ -64,5 +64,3 @@ class SatisfactionRatings extends ClientAbstract {
 	}
 
 }
-
-?>

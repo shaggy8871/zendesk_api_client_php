@@ -7,12 +7,15 @@ namespace Zendesk\API;
  */
 class TicketImport extends ClientAbstract {
 
+    const OBJ_NAME = 'ticket';
+    const OBJ_NAME_PLURAL = 'tickets';
+
 	/*
 	 * Create a new ticket field
 	 */
 	public function import(array $params) {
 		$endPoint = Http::prepare('imports/tickets.json');
-		$response = Http::send($this->client, $endPoint, array ('ticket' => $params), 'POST');
+		$response = Http::send($this->client, $endPoint, array (self::OBJ_NAME => $params), 'POST');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -20,5 +23,3 @@ class TicketImport extends ClientAbstract {
 	}
 
 }
-
-?>

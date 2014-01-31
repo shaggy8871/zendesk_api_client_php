@@ -112,5 +112,3 @@ class VoiceGreetings extends ClientAbstract {
 	}
 
 }
-
-?>

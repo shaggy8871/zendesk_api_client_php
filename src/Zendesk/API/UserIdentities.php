@@ -7,6 +7,9 @@ namespace Zendesk\API;
  */
 class UserIdentities extends ClientAbstract {
 
+    const OBJ_NAME = 'identity';
+    const OBJ_NAME_PLURAL = 'identities';
+
 	/*
 	 * List all user identities
 	 */
@@ -40,7 +43,7 @@ class UserIdentities extends ClientAbstract {
 			$this->lastId = null;
 		}
 		if(!$this->hasKeys($params, array('user_id', 'id'))) {
-			throw new MissingParametersException(__METHOD__, array('id', 'user_id'));
+			throw new MissingParametersException(__METHOD__, array('user_id', 'id'));
 		}
 		$endPoint = Http::prepare('users/'.$params['user_id'].'/identities/'.$params['id'].'.json');
 		$response = Http::send($this->client, $endPoint);
@@ -67,7 +70,7 @@ class UserIdentities extends ClientAbstract {
 		unset($params['user_id']);
 		unset($params['end_user']);
 		$endPoint = Http::prepare($prepare);
-		$response = Http::send($this->client, $endPoint, array ('identity' => $params), 'POST');
+		$response = Http::send($this->client, $endPoint, array (self::OBJ_NAME => $params), 'POST');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -168,5 +171,3 @@ class UserIdentities extends ClientAbstract {
 	}
 
 }
-
-?>

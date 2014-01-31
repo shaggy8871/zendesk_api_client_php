@@ -195,7 +195,6 @@ class VoiceTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals(is_object($stats), true, 'Should return an object');
 		$this->assertEquals(is_object($stats->current_queue_activity), true, 'Should return an object called "current_queue_activity"');
 		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
-		return $stack;
 	}
 
 	/**
@@ -206,7 +205,6 @@ class VoiceTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals(is_object($stats), true, 'Should return an object');
 		$this->assertEquals(is_object($stats->historical_queue_activity), true, 'Should return an object called "historical_queue_activity"');
 		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
-		return $stack;
 	}
 
 	/**
@@ -217,7 +215,6 @@ class VoiceTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals(is_object($stats), true, 'Should return an object');
 		$this->assertEquals(is_array($stats->agents_activity), true, 'Should return an object containing an array called "agents_activity"');
 		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
-		return $stack;
 	}
 
 }

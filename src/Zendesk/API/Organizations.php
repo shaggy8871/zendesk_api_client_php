@@ -18,7 +18,7 @@ class Organizations extends ClientAbstract {
 			$params['user_id'] = $this->client->users()->getLastId();
 			$this->client->users()->setLastId(null);
 		}
-		$endPoint = Http::prepare((isset($params['user_id']) ? 'users/'.$params['user_id'].'/organizations.json' : 'organizations.json'));
+		$endPoint = Http::prepare((isset($params['user_id']) ? 'users/'.$params['user_id'].'/organizations.json' : 'organizations.json'), ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload()));
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -38,7 +38,7 @@ class Organizations extends ClientAbstract {
 		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
-		$endPoint = Http::prepare('organizations/'.$params['id'].'.json');
+		$endPoint = Http::prepare('organizations/'.$params['id'].'.json', ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload()));
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -52,7 +52,7 @@ class Organizations extends ClientAbstract {
 	 */
 	public function create(array $params) {
 		$endPoint = Http::prepare('organizations.json');
-		$response = Http::send($this->client, $endPoint, array (self::OBJ_NAME => $params), 'POST');
+		$response = Http::send($this->client, $endPoint, array(self::OBJ_NAME => $params), 'POST');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -64,7 +64,7 @@ class Organizations extends ClientAbstract {
 	 */
 	public function createMany(array $params) {
 		$endPoint = Http::prepare('organizations/create_many.json');
-		$response = Http::send($this->client, $endPoint, array (self::OBJ_NAME => $params), 'POST');
+		$response = Http::send($this->client, $endPoint, array(self::OBJ_NAME => $params), 'POST');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -138,7 +138,7 @@ class Organizations extends ClientAbstract {
 		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
-		$endPoint = Http::prepare('organizations/'.$params['id'].'/related.json');
+		$endPoint = Http::prepare('organizations/'.$params['id'].'/related.json', ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload()));
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -153,7 +153,7 @@ class Organizations extends ClientAbstract {
 		if(!$this->hasKeys($params, array('external_id'))) {
 			throw new MissingParametersException(__METHOD__, array('external_id'));
 		}
-		$endPoint = Http::prepare('organizations/search.json');
+		$endPoint = Http::prepare('organizations/search.json', ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload()));
 		$response = Http::send($this->client, $endPoint, array('external_id' => $params['external_id']), 'GET');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -171,5 +171,3 @@ class Organizations extends ClientAbstract {
 	public function tag($id) { return $this->client->tags()->setLastId($id); }
 
 }
-
-?>

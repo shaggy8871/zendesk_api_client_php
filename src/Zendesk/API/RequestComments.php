@@ -8,21 +8,25 @@ namespace Zendesk\API;
  */
 class RequestComments extends ClientAbstract {
 
+    const OBJ_NAME = 'comment';
+    const OBJ_NAME_PLURAL = 'comments';
+
 	/*
 	 * Get comments from a request
 	 */
 	public function findAll(array $params) {
-		if($this->lastId != null) {
-			$params['id'] = $this->lastId;
-			$this->lastId = null;
+		if($this->client->requests()->getLastId() != null) {
+			$params['request_id'] = $this->client->requests()->getLastId();
+			$this->client->requests()->setLastId(null);
 		}
-		if(!$params['id']) {
-			throw new MissingParametersException(__METHOD__, array('id'));
+		if(!$this->hasKeys($params, array('request_id'))) {
+			throw new MissingParametersException(__METHOD__, array('request_id'));
 		}
-		$id = $params['id'];
-		unset($params['id']);
-		$endPoint = Http::prepare('requests/'.$id.'/comments.json');
+		$endPoint = Http::prepare('requests/'.$params['request_id'].'/comments.json');
 		$response = Http::send($this->client, $endPoint);
+        echo __METHOD__;
+        print_r($this->client->getDebug());
+        print_r($response);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -34,22 +38,16 @@ class RequestComments extends ClientAbstract {
 	 * Show a specific request
 	 */
 	public function find(array $params = array()) {
-		if($this->lastId != null) {
-			throw new CustomException('Calls to '.__METHOD__.' may not chain from the comment() helper. Try $client->requests->comments() instead.');
-		}
 		if($this->client->requests()->getLastId() != null) {
-			$params['ticket_id'] = $this->client->requests()->getLastId();
+			$params['request_id'] = $this->client->requests()->getLastId();
 			$this->client->requests()->setLastId(null);
-		}
-		if(!$params['request_id']) {
-			throw new MissingParametersException(__METHOD__, array('request_id'));
 		}
 		if($this->lastId != null) {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
-			throw new MissingParametersException(__METHOD__, array('id'));
+		if(!$this->hasKeys($params, array('id', 'request_id'))) {
+			throw new MissingParametersException(__METHOD__, array('id', 'request_id'));
 		}
 		$endPoint = Http::prepare('requests/'.$params['request_id'].'/comments/'.$params['id'].'.json');
 		$response = Http::send($this->client, $endPoint);
@@ -61,5 +59,3 @@ class RequestComments extends ClientAbstract {
 	}
 
 }
-
-?>

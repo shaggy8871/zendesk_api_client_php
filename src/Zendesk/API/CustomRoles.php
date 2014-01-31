@@ -7,6 +7,9 @@ namespace Zendesk\API;
  */
 class CustomRoles extends ClientAbstract {
 
+    const OBJ_NAME = 'custom_role';
+    const OBJ_NAME_PLURAL = 'custom_roles';
+
 	/*
 	 * List all custom roles
 	 */
@@ -21,5 +24,3 @@ class CustomRoles extends ClientAbstract {
 	}
 
 }
-
-?>

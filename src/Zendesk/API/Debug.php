@@ -12,5 +12,3 @@ class Debug {
 	public $lastResponseHeaders;
 
 }
-
-?>

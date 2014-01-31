@@ -8,13 +8,13 @@ namespace Zendesk\API;
  */
 class Users extends ClientAbstract {
 
+    const OBJ_NAME = 'user';
+    const OBJ_NAME_PLURAL = 'users';
+
 	protected $identities;
 
 	public function __construct($client) {
 		parent::__construct($client);
-		/*
-		 * Additional sub-objects
-		 */
 		$this->identities = new UserIdentities($client);
 	}
 
@@ -45,7 +45,7 @@ class Users extends ClientAbstract {
 		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
-		$endPoint = Http::prepare('users/'.$params['id'].'.json');
+		$endPoint = Http::prepare('users/'.$params['id'].'.json', ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload()));
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -65,7 +65,7 @@ class Users extends ClientAbstract {
 		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
-		$endPoint = Http::prepare('users/'.$params['id'].'/related.json');
+		$endPoint = Http::prepare('users/'.$params['id'].'/related.json', ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload()));
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -79,7 +79,7 @@ class Users extends ClientAbstract {
 	 */
 	public function create(array $params) {
 		$endPoint = Http::prepare('users.json');
-		$response = Http::send($this->client, $endPoint, array ('user' => $params), 'POST');
+		$response = Http::send($this->client, $endPoint, array (self::OBJ_NAME => $params), 'POST');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -100,7 +100,7 @@ class Users extends ClientAbstract {
 		$id = $params['id'];
 		unset($params['id']);
 		$endPoint = Http::prepare('users/me/merge.json');
-		$response = Http::send($this->client, $endPoint, array ('user' => $params), 'PUT');
+		$response = Http::send($this->client, $endPoint, array (self::OBJ_NAME => $params), 'PUT');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -112,7 +112,7 @@ class Users extends ClientAbstract {
 	 */
 	public function createMany(array $params) {
 		$endPoint = Http::prepare('users/create_many.json');
-		$response = Http::send($this->client, $endPoint, array ('users' => $params), 'POST');
+		$response = Http::send($this->client, $endPoint, array (self::OBJ_NAME => $params), 'POST');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -133,7 +133,7 @@ class Users extends ClientAbstract {
 		$id = $params['id'];
 		unset($params['id']);
 		$endPoint = Http::prepare('users/'.$id.'.json');
-		$response = Http::send($this->client, $endPoint, array ('user' => $params), 'PUT');
+		$response = Http::send($this->client, $endPoint, array (self::OBJ_NAME => $params), 'PUT');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -148,7 +148,7 @@ class Users extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$params['suspended'] = true;
@@ -289,5 +289,3 @@ class Users extends ClientAbstract {
 	public function groupMembership($id) { return $this->client->groupMemberships()->setLastId($id); }
 
 }
-
-?>

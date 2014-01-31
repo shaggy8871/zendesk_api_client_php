@@ -7,6 +7,9 @@ namespace Zendesk\API;
  */
 class OAuthTokens extends ClientAbstract {
 
+    const OBJ_NAME = 'token';
+    const OBJ_NAME_PLURAL = 'tokens';
+
 	/*
 	 * List all tokens
 	 */
@@ -58,5 +61,3 @@ class OAuthTokens extends ClientAbstract {
 	}
 
 }
-
-?>

@@ -12,5 +12,3 @@ class CustomException extends \Exception {
 	}
 
 }
-
-?>

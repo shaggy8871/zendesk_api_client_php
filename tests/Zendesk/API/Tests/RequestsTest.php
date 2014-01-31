@@ -107,8 +107,7 @@ class RequestsTest extends \PHPUnit_Framework_TestCase {
 	 * @depends testAuthToken
 	 */
 	public function testComments() {
-		$comments = $this->client->request(218)->comments();
-		print_r($comments);
+		$comments = $this->client->request(218)->comments()->findAll();
 		$this->assertEquals(is_object($comments), true, 'Should return an object');
 		$this->assertEquals(is_array($comments->comments), true, 'Should return an object containing an array called "comments"');
 		$this->assertGreaterThan(0, $comments->comments[0]->id, 'Returns a non-numeric id for comments[0]');

@@ -40,5 +40,3 @@ class Search extends ClientAbstract {
 	}
 
 }
-
-?>

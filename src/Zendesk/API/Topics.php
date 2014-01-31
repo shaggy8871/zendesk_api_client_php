@@ -7,6 +7,9 @@ namespace Zendesk\API;
  */
 class Topics extends ClientAbstract {
 
+    const OBJ_NAME = 'topic';
+    const OBJ_NAME_PLURAL = 'topics';
+
 	protected $comments;
 	protected $subscriptions;
 	protected $votes;
@@ -32,7 +35,8 @@ class Topics extends ClientAbstract {
 		}
 		$endPoint = Http::prepare(
 				(isset($params['forum_id']) ? 'forums/'.$params['forum_id'].'/topics.json' : 
-				(isset($params['user_id']) ? 'users/'.$params['user_id'].'/topics.json' : 'topics.json'))
+				(isset($params['user_id']) ? 'users/'.$params['user_id'].'/topics.json' : 'topics.json')), 
+               ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload())
 			);
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
@@ -53,7 +57,7 @@ class Topics extends ClientAbstract {
 		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
-		$endPoint = Http::prepare((is_array($params['id']) ? 'topics/show_many.json?ids='.implode(',', $params['id']) : 'topics/'.$params['id'].'.json'));
+		$endPoint = Http::prepare((is_array($params['id']) ? 'topics/show_many.json?ids='.implode(',', $params['id']) : 'topics/'.$params['id'].'.json'), ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload()));
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -71,7 +75,7 @@ class Topics extends ClientAbstract {
 			$this->client->forums()->setLastId(null);
 		}
 		$endPoint = Http::prepare('topics.json');
-		$response = Http::send($this->client, $endPoint, array ('topic' => $params), 'POST');
+		$response = Http::send($this->client, $endPoint, array (self::OBJ_NAME => $params), 'POST');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -83,7 +87,7 @@ class Topics extends ClientAbstract {
 	 */
 	public function import(array $params) {
 		$endPoint = Http::prepare('import/topics.json');
-		$response = Http::send($this->client, $endPoint, array ('topic' => $params), 'POST');
+		$response = Http::send($this->client, $endPoint, array (self::OBJ_NAME => $params), 'POST');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -98,13 +102,13 @@ class Topics extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$id = $params['id'];
 		unset($params['id']);
 		$endPoint = Http::prepare('topics/'.$id.'.json');
-		$response = Http::send($this->client, $endPoint, array ('topic' => $params), 'PUT');
+		$response = Http::send($this->client, $endPoint, array (self::OBJ_NAME => $params), 'PUT');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -149,5 +153,3 @@ class Topics extends ClientAbstract {
 	public function tag($id) { return $this->client->tags()->setLastId($id); }
 
 }
-
-?>

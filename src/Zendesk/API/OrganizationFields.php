@@ -48,7 +48,7 @@ class OrganizationFields extends ClientAbstract {
 	 */
 	public function create(array $params) {
 		$endPoint = Http::prepare('organization_fields.json');
-		$response = Http::send($this->client, $endPoint, array (self::OBJ_NAME => $params), 'POST');
+		$response = Http::send($this->client, $endPoint, array(self::OBJ_NAME => $params), 'POST');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -69,7 +69,7 @@ class OrganizationFields extends ClientAbstract {
 		$id = $params['id'];
 		unset($params['id']);
 		$endPoint = Http::prepare('organization_fields/'.$id.'.json');
-		$response = Http::send($this->client, $endPoint, array (self::OBJ_NAME => $params), 'PUT');
+		$response = Http::send($this->client, $endPoint, array(self::OBJ_NAME => $params), 'PUT');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -105,6 +105,7 @@ class OrganizationFields extends ClientAbstract {
 		}
 		$endPoint = Http::prepare('organization_fields/reorder.json');
 		$response = Http::send($this->client, $endPoint, array('user_fields_ids' => $params['user_fields_ids']), 'PUT');
+        echo __METHOD__;
         print_r($this->client->getDebug());
         print_r($response);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
@@ -115,5 +116,3 @@ class OrganizationFields extends ClientAbstract {
 	}
 
 }
-
-?>

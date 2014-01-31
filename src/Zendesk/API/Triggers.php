@@ -31,7 +31,7 @@ class Triggers extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
         $endPoint = Http::prepare('triggers/'.$params['id'].'.json');
@@ -63,7 +63,7 @@ class Triggers extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
         $endPoint = Http::prepare('triggers/'.$params['id'].'.json');
@@ -82,7 +82,7 @@ class Triggers extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
         $endPoint = Http::prepare('triggers/'.$params['id'].'.json');
@@ -96,5 +96,3 @@ class Triggers extends ClientAbstract {
 	public function active() { return $this->findAll(array('active' => true)); }
 
 }
-
-?>

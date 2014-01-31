@@ -7,6 +7,9 @@ namespace Zendesk\API;
  */
 class Settings extends ClientAbstract {
 
+    const OBJ_NAME = 'setting';
+    const OBJ_NAME_PLURAL = 'settings';
+
 	/*
 	 * Returns a range of settings
 	 */
@@ -25,7 +28,7 @@ class Settings extends ClientAbstract {
 	 */
 	public function update(array $params) {
 		$endPoint = Http::prepare('account/settings.json');
-		$response = Http::send($this->client, $endPoint, array ('settings' => $params), 'PUT');
+		$response = Http::send($this->client, $endPoint, array(self::OBJ_NAME => $params), 'PUT');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -33,5 +36,3 @@ class Settings extends ClientAbstract {
 	}
 
 }
-
-?>

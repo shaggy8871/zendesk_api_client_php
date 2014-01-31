@@ -7,6 +7,9 @@ namespace Zendesk\API;
  */
 class TicketForms extends ClientAbstract {
 
+    const OBJ_NAME = 'ticket_form';
+    const OBJ_NAME_PLURAL = 'ticket_forms';
+
 	/*
 	 * List all ticket forms
 	 */
@@ -28,7 +31,7 @@ class TicketForms extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$endPoint = Http::prepare('ticket_forms/'.$params['id'].'.json');
@@ -45,7 +48,7 @@ class TicketForms extends ClientAbstract {
 	 */
 	public function create(array $params) {
 		$endPoint = Http::prepare('ticket_forms.json');
-		$response = Http::send($this->client, $endPoint, array ('ticket_form' => $params), 'POST');
+		$response = Http::send($this->client, $endPoint, array(self::OBJ_NAME => $params), 'POST');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -61,13 +64,13 @@ class TicketForms extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$id = $params['id'];
 		unset($params['id']);
 		$endPoint = Http::prepare('ticket_forms/'.$id.'.json');
-		$response = Http::send($this->client, $endPoint, array ('ticket_form' => $params), 'PUT');
+		$response = Http::send($this->client, $endPoint, array(self::OBJ_NAME => $params), 'PUT');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -83,7 +86,7 @@ class TicketForms extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$id = $params['id'];
@@ -117,7 +120,7 @@ class TicketForms extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$id = $params['id'];
@@ -139,5 +142,3 @@ class TicketForms extends ClientAbstract {
 	}
 
 }
-
-?>

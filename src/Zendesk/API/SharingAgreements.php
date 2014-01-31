@@ -24,5 +24,3 @@ class SharingAgreements extends ClientAbstract {
 	}
 
 }
-
-?>

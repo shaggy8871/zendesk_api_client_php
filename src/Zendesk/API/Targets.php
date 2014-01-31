@@ -31,7 +31,7 @@ class Targets extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
         $endPoint = Http::prepare('targets/'.$params['id'].'.json');
@@ -63,7 +63,7 @@ class Targets extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
         $endPoint = Http::prepare('targets/'.$params['id'].'.json');
@@ -82,7 +82,7 @@ class Targets extends ClientAbstract {
 			$params['id'] = $this->lastId;
 			$this->lastId = null;
 		}
-		if(!$params['id']) {
+		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
         $endPoint = Http::prepare('targets/'.$params['id'].'.json');
@@ -94,5 +94,3 @@ class Targets extends ClientAbstract {
 	}
 
 }
-
-?>

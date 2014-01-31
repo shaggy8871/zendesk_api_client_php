@@ -56,7 +56,7 @@ class SuspendedTickets extends ClientAbstract {
 		}
 		$id = $params['id'];
 		$endPoint = Http::prepare((is_array($id) ? 'suspended_tickets/recover_many.json?ids='.implode(',', $id) : 'suspended_tickets/'.$id.'/recover.json'));
-		$response = Http::send($this->client, $endPoint, array (self::OBJ_NAME => $params), 'PUT');
+		$response = Http::send($this->client, $endPoint, array(self::OBJ_NAME => $params), 'PUT');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -84,5 +84,3 @@ class SuspendedTickets extends ClientAbstract {
 	}
 
 }
-
-?>

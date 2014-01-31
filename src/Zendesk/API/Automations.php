@@ -7,6 +7,9 @@ namespace Zendesk\API;
  */
 class Automations extends ClientAbstract {
 
+    const OBJ_NAME = 'automation';
+    const OBJ_NAME_PLURAL = 'automations';
+
 	/*
 	 * List all automations
 	 */
@@ -45,7 +48,7 @@ class Automations extends ClientAbstract {
 	 */
 	public function create(array $params) {
 		$endPoint = Http::prepare('automations.json');
-		$response = Http::send($this->client, $endPoint, array('automation' => $params), 'POST');
+		$response = Http::send($this->client, $endPoint, array(self::OBJ_NAME => $params), 'POST');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -65,7 +68,7 @@ class Automations extends ClientAbstract {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$endPoint = Http::prepare('automations/'.$params['id'].'.json');
-		$response = Http::send($this->client, $endPoint, array('automation' => $params), 'PUT');
+		$response = Http::send($this->client, $endPoint, array(self::OBJ_NAME => $params), 'PUT');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
@@ -94,5 +97,3 @@ class Automations extends ClientAbstract {
 	}
 
 }
-
-?>
