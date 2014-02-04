@@ -14,7 +14,7 @@ class AppInstallations extends ClientAbstract {
 	 * List all app installations
 	 */
 	public function findAll(array $params = array()) {
-		$endPoint = Http::prepare('apps/installations.json'.(isset($params['include']) ? '?include='.$params['include'] : ''));
+		$endPoint = Http::prepare('apps/installations.json'.(isset($params['include']) ? '?include='.$params['include'] : ''), null, $params);
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -60,6 +60,7 @@ class AppInstallations extends ClientAbstract {
 		if ($this->client->getDebug()->lastResponseCode != 200) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return true;
 	}
 

@@ -14,7 +14,7 @@ class Macros extends ClientAbstract {
 	 * List all macros
 	 */
 	public function findAll(array $params = array()) {
-		$endPoint = Http::prepare((isset($params['active']) ? 'macros/active.json' : 'macros.json'));
+		$endPoint = Http::prepare((isset($params['active']) ? 'macros/active.json' : 'macros.json'), null, $params);
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -93,6 +93,7 @@ class Macros extends ClientAbstract {
 		if ($this->client->getDebug()->lastResponseCode != 200) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return true;
 	}
 

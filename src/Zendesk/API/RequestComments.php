@@ -22,7 +22,7 @@ class RequestComments extends ClientAbstract {
 		if(!$this->hasKeys($params, array('request_id'))) {
 			throw new MissingParametersException(__METHOD__, array('request_id'));
 		}
-		$endPoint = Http::prepare('requests/'.$params['request_id'].'/comments.json');
+		$endPoint = Http::prepare('requests/'.$params['request_id'].'/comments.json', null, $params);
 		$response = Http::send($this->client, $endPoint);
         echo __METHOD__;
         print_r($this->client->getDebug());

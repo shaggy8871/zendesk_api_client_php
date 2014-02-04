@@ -42,7 +42,7 @@ class TicketMetricsTest extends \PHPUnit_Framework_TestCase {
 	 * @depends testAuthToken
 	 */
 	public function testAll() {
-		$metrics = $this->client->tickets()->metrics();
+		$metrics = $this->client->tickets()->metrics()->findAll();
 		$this->assertEquals(is_object($metrics), true, 'Should return an object');
 		$this->assertEquals(is_array($metrics->ticket_metrics), true, 'Should return an object containing an array called "ticket_metrics"');
 		$this->assertGreaterThan(0, $metrics->ticket_metrics[0]->id, 'Returns a non-numeric id for ticket_metrics[0]');

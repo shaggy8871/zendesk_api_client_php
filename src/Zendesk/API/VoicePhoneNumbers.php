@@ -14,11 +14,12 @@ class VoicePhoneNumbers extends ClientAbstract {
 	 * List all voice phone numbers
 	 */
 	public function findAll(array $params = array()) {
-		$endPoint = Http::prepare('channels/voice/phone_numbers.json');
+		$endPoint = Http::prepare('channels/voice/phone_numbers.json', null, $params);
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -38,6 +39,7 @@ class VoicePhoneNumbers extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -45,11 +47,15 @@ class VoicePhoneNumbers extends ClientAbstract {
 	 * Search for a voice phone number
 	 */
 	public function search(array $params) {
+		if(!$this->hasKeys($params, array('country'))) {
+			throw new MissingParametersException(__METHOD__, array('country'));
+		}
 		$endPoint = Http::prepare('channels/voice/phone_numbers/search.json?'.http_build_query($params));
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -57,13 +63,15 @@ class VoicePhoneNumbers extends ClientAbstract {
 	 * Create a voice phone number
 	 */
 	public function create(array $params) {
+		if(!$this->hasKeys($params, array('token'))) {
+			throw new MissingParametersException(__METHOD__, array('token'));
+		}
 		$endPoint = Http::prepare('channels/voice/phone_numbers.json');
-		$response = Http::send($this->client, $endPoint, array (self::OBJ_NAME => $params), 'POST');
-        print_r($this->client->getDebug());
-        print_r($response);
-		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
+		$response = Http::send($this->client, $endPoint, $params, 'POST');
+		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -85,6 +93,7 @@ class VoicePhoneNumbers extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -105,6 +114,7 @@ class VoicePhoneNumbers extends ClientAbstract {
 		if ($this->client->getDebug()->lastResponseCode != 200) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return true;
 	}
 

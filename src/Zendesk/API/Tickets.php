@@ -45,7 +45,7 @@ class Tickets extends ClientAbstract {
 				(isset($params['organization_id']) ? 'organizations/'.$params['organization_id'].'/tickets' : 
 				(isset($params['user_id']) ? 'users/'.$params['user_id'].'/tickets/'.($params['ccd'] ? 'ccd' : 'requested') : 
 				(isset($params['recent']) ? 'tickets/recent' : 'tickets'))
-			).'.json', ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload()));
+			).'.json', $this->client->getSideload($params), $params);
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -65,7 +65,7 @@ class Tickets extends ClientAbstract {
 		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
-		$endPoint = Http::prepare((is_array($params['id']) ? 'tickets/show_many.json?ids='.implode(',', $params['id']) : 'tickets/'.$params['id'].'.json'), ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload()));
+		$endPoint = Http::prepare((is_array($params['id']) ? 'tickets/show_many.json?ids='.implode(',', $params['id']) : 'tickets/'.$params['id'].'.json'), $this->client->getSideload($params));
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -85,7 +85,7 @@ class Tickets extends ClientAbstract {
 		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
-		$endPoint = Http::prepare('channels/twitter/tickets/'.$params['id'].'/statuses.json'.(is_array($params['comment_ids']) ? '?'.implode(',', $params['comment_ids']) : ''), ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload()));
+		$endPoint = Http::prepare('channels/twitter/tickets/'.$params['id'].'/statuses.json'.(is_array($params['comment_ids']) ? '?'.implode(',', $params['comment_ids']) : ''), $this->client->getSideload($params));
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -107,6 +107,7 @@ class Tickets extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -122,6 +123,7 @@ class Tickets extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__, ($this->client->getDebug()->lastResponseCode == 422 ? ' (hint: you can\'t create two tickets from the same tweet)' : ''));
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -147,6 +149,7 @@ class Tickets extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__, ($this->client->getDebug()->lastResponseCode == 422 ? ' (hint: you can\'t update a closed ticket)' : ''));
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -168,6 +171,7 @@ class Tickets extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__, ($this->client->getDebug()->lastResponseCode == 422 ? ' (note: there\'s currently a bug in the service so this call may have succeeded; call tickets->find to see if it still exists.)' : ''));
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -183,7 +187,7 @@ class Tickets extends ClientAbstract {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$id = $params['id'];
-		$endPoint = Http::prepare('tickets/'.$id.'/related.json', ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload()));
+		$endPoint = Http::prepare('tickets/'.$id.'/related.json', $this->client->getSideload($params), $params);
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -209,6 +213,7 @@ class Tickets extends ClientAbstract {
 		if ($this->client->getDebug()->lastResponseCode != 200) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return true;
 	}
 
@@ -224,7 +229,7 @@ class Tickets extends ClientAbstract {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$id = $params['id'];
-		$endPoint = Http::prepare('tickets/'.$id.'/collaborators.json', ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload()));
+		$endPoint = Http::prepare('tickets/'.$id.'/collaborators.json', $this->client->getSideload($params), $params);
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -245,7 +250,7 @@ class Tickets extends ClientAbstract {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$id = $params['id'];
-		$endPoint = Http::prepare('tickets/'.$id.'/incidents.json', ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload()));
+		$endPoint = Http::prepare('tickets/'.$id.'/incidents.json', $this->client->getSideload($params), $params);
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -266,7 +271,7 @@ class Tickets extends ClientAbstract {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$id = $params['id'];
-		$endPoint = Http::prepare('tickets/'.$id.'/problems.json', ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload()));
+		$endPoint = Http::prepare('tickets/'.$id.'/problems.json', $this->client->getSideload($params), $params);
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -292,6 +297,7 @@ class Tickets extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -307,6 +313,7 @@ class Tickets extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -322,6 +329,7 @@ class Tickets extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 

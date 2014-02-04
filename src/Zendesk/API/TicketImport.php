@@ -19,6 +19,7 @@ class TicketImport extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 

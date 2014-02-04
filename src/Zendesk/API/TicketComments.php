@@ -21,7 +21,7 @@ class TicketComments extends ClientAbstract {
 		if(!$this->hasKeys($params, array('ticket_id'))) {
 			throw new MissingParametersException(__METHOD__, array('ticket_id'));
 		}
-		$endPoint = Http::prepare('tickets/'.$params['ticket_id'].'/comments.json');
+		$endPoint = Http::prepare('tickets/'.$params['ticket_id'].'/comments.json', null, $params);
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -59,7 +59,7 @@ class TicketComments extends ClientAbstract {
 	 * Handy aliases:
 	 */
 	public function find(array $params = array()) {
-		throw new CustomException('Method '.__METHOD__.' does not exist. Try $client->ticket(ticket_id)->comments() instead.');
+		throw new CustomException('Method '.__METHOD__.' does not exist. Try $client->ticket(ticket_id)->comments()->findAll() instead.');
 	}
 
 }

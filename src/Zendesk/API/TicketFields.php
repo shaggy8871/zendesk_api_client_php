@@ -14,7 +14,7 @@ class TicketFields extends ClientAbstract {
 	 * List all ticket fields
 	 */
 	public function findAll() {
-		$endPoint = Http::prepare('ticket_fields.json');
+		$endPoint = Http::prepare('ticket_fields.json', null, $params);
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -52,6 +52,7 @@ class TicketFields extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -73,6 +74,7 @@ class TicketFields extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -93,6 +95,7 @@ class TicketFields extends ClientAbstract {
 		if ($this->client->getDebug()->lastResponseCode != 200) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return true;
 	}
 

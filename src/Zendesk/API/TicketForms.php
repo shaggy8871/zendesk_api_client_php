@@ -14,7 +14,7 @@ class TicketForms extends ClientAbstract {
 	 * List all ticket forms
 	 */
 	public function findAll() {
-		$endPoint = Http::prepare('ticket_forms.json');
+		$endPoint = Http::prepare('ticket_forms.json', null, $params);
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);

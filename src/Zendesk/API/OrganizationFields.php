@@ -14,7 +14,7 @@ class OrganizationFields extends ClientAbstract {
 	 * List all organization fields
 	 */
 	public function findAll(array $params = array()) {
-		$endPoint = Http::prepare('organization_fields.json');
+		$endPoint = Http::prepare('organization_fields.json', null, $params);
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -52,6 +52,7 @@ class OrganizationFields extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -73,6 +74,7 @@ class OrganizationFields extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -93,6 +95,7 @@ class OrganizationFields extends ClientAbstract {
 		if ($this->client->getDebug()->lastResponseCode != 200) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return true;
 	}
 

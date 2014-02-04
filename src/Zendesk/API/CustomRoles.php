@@ -14,7 +14,7 @@ class CustomRoles extends ClientAbstract {
 	 * List all custom roles
 	 */
 	public function findAll(array $params = array()) {
-		$endPoint = Http::prepare('custom_roles.json');
+		$endPoint = Http::prepare('custom_roles.json', null, $params);
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);

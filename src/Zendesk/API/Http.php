@@ -10,8 +10,26 @@ class Http {
 	/*
 	 * Prepares an endpoint URL with optional side-loading
 	 */
-	public static function prepare($endPoint, $includes = false) {
-		return $endPoint.(is_array($includes) ? (strpos($endPoint, '?') === false ? '?' : '&').'include='.implode(',', $includes) : '');
+	public static function prepare($endPoint, $sideload = null, $iterators = null) {
+        $addParams = array();
+        // First look for side-loaded variables
+        if(is_array($sideload)) {
+            $addParams['include'] = implode(',', $sideload);
+        }
+        // Next look for special collection iterators
+        if(is_array($iterators)) {
+            foreach($iterators as $k => $v) {
+                if(in_array($k, array('per_page', 'page', 'sort_order'))) {
+                    $addParams[$k] = $v;
+                }
+            }
+        }
+        // Send it back...
+        if(count($addParams)) {
+            return $endPoint.(strpos($endPoint, '?') === false ? '?' : '&').http_build_query($addParams);
+        } else {
+    		return $endPoint;
+        }
 	}
 
 	/*

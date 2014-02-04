@@ -14,7 +14,7 @@ class OAuthTokens extends ClientAbstract {
 	 * List all tokens
 	 */
 	public function findAll(array $params = array()) {
-		$endPoint = Http::prepare('oauth/tokens.json');
+		$endPoint = Http::prepare('oauth/tokens.json', null, $params);
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -57,6 +57,7 @@ class OAuthTokens extends ClientAbstract {
 		if ($this->client->getDebug()->lastResponseCode != 200) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return true;
 	}
 

@@ -11,9 +11,6 @@ class Apps extends ClientAbstract {
 
 	public function __construct($client) {
 		parent::__construct($client);
-		/*
-		 * Additional sub-objects
-		 */
 		$this->installations = new AppInstallations($client);
 	}
 
@@ -24,11 +21,12 @@ class Apps extends ClientAbstract {
 		if(!$this->hasKeys($params, array('file'))) {
 			throw new MissingParametersException(__METHOD__, array('file'));
 		}
-		$endPoint = 'apps/uploads.json';
+		$endPoint = Http::prepare('apps/uploads.json');
 		$response = Http::send($this->client, $endPoint, array('uploaded_data' => '@'.$params['file']), 'POST', (isset($params['type']) ? $params['type'] : 'application/binary'));
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -82,6 +80,7 @@ class Apps extends ClientAbstract {
 		if ($this->client->getDebug()->lastResponseCode != 200) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return true;
 	}
 

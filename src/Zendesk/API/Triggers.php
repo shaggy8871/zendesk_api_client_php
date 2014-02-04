@@ -14,7 +14,7 @@ class Triggers extends ClientAbstract {
 	 * List triggers
 	 */
 	public function findAll(array $params = array()) {
-		$endPoint = Http::prepare((isset($params['active']) ? 'triggers/active.json' : 'triggers.json'));
+		$endPoint = Http::prepare((isset($params['active']) ? 'triggers/active.json' : 'triggers.json'), null, $params);
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -52,6 +52,7 @@ class Triggers extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -71,6 +72,7 @@ class Triggers extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -90,6 +92,7 @@ class Triggers extends ClientAbstract {
 		if ($this->client->getDebug()->lastResponseCode != 200) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return true;
 	}
 

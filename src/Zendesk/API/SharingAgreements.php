@@ -14,7 +14,7 @@ class SharingAgreements extends ClientAbstract {
 	 * Returns a list of sharing agreements
 	 */
 	public function findAll(array $params = array ()) {
-		$endPoint = Http::prepare('sharing_agreements.json');
+		$endPoint = Http::prepare('sharing_agreements.json', null, $params);
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);

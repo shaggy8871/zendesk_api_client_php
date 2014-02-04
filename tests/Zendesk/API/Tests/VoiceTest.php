@@ -42,14 +42,22 @@ class VoiceTest extends \PHPUnit_Framework_TestCase {
 	 * @depends testAuthToken
 	 */
 	public function testCreatePhoneNumber() {
+        // First we need to search for an available phone number
+        $numbers = $this->client->voice()->phoneNumbers()->search(array(
+            'country' => 'US'
+        ));
+		$this->assertEquals(is_object($numbers), true, 'Should return an object');
+		$this->assertEquals(is_array($numbers->phone_numbers), true, 'Should return an object containing an array called "phone_numbers"');
+		$this->assertEquals(is_string($numbers->phone_numbers[0]->token), true, 'No string token found for first phone number');
+        // Now we assign it to our account
 		$number = $this->client->voice()->phoneNumbers()->create(array(
-            'token' => md5(time())
+            'token' => $numbers->phone_numbers[0]->token
 		));
 		$this->assertEquals(is_object($number), true, 'Should return an object');
 		$this->assertEquals(is_object($number->phone_number), true, 'Should return an object called "phone_number"');
 		$this->assertGreaterThan(0, $number->phone_number->id, 'Returns a non-numeric id for trigger');
-		$this->assertEquals($number->phone_number->number, '+447521292544', 'Value of test phone number does not match');
-		$this->assertEquals($this->client->getDebug()->lastResponseCode, '201', 'Does not return HTTP code 201');
+		$this->assertEquals($number->phone_number->number, $numbers->phone_numbers[0]->number, 'Value of test phone number does not match');
+		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
 		$id = $number->phone_number->id;
 		$stack = array($id);
 		return $stack;
@@ -71,10 +79,10 @@ class VoiceTest extends \PHPUnit_Framework_TestCase {
 	 * @depends testCreatePhoneNumber
 	 */
 	public function testSearchPhoneNumber($stack) {
-		$numbers = $this->client->voice()->phoneNumbers()->search(array('country' => 'UK', 'toll_free' => false));
+		$numbers = $this->client->voice()->phoneNumbers()->search(array('country' => 'US'));
 		$this->assertEquals(is_object($numbers), true, 'Should return an object');
 		$this->assertEquals(is_array($numbers->phone_numbers), true, 'Should return an object containing an array called "phone_numbers"');
-		$this->assertGreaterThan(0, $numbers->phone_numbers[0]->id, 'Returns a non-numeric id for phone_numbers[0]');
+		$this->assertEquals(is_string($numbers->phone_numbers[0]->token), true, 'No string token found for first phone number');
 		$this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
 		return $stack;
 	}
@@ -123,8 +131,8 @@ class VoiceTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testCreateGreeting() {
 		$greeting = $this->client->voice()->greetings()->create(array(
-            'name' => 'Hello',
-            'type' => 'Voice mail'
+            'name' => 'Another example',
+            'type' => 'Voicemail'
 		));
 		$this->assertEquals(is_object($greeting), true, 'Should return an object');
 		$this->assertEquals(is_object($greeting->greeting), true, 'Should return an object called "greeting"');

@@ -16,8 +16,7 @@ class Views extends ClientAbstract {
 	public function findAll(array $params = array()) {
 		$endPoint = Http::prepare(
 				(isset($params['active']) ? 'views/active.json' : 
-				(isset($params['compact']) ? 'views/compact.json' : 'views.json')), 
-               ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload())
+				(isset($params['compact']) ? 'views/compact.json' : 'views.json')), $this->client->getSideload($params), $params
             );
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
@@ -38,7 +37,7 @@ class Views extends ClientAbstract {
 		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
-		$endPoint = Http::prepare('views/'.$params['id'].'.json', ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload()));
+		$endPoint = Http::prepare('views/'.$params['id'].'.json', $this->client->getSideload($params));
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -56,6 +55,7 @@ class Views extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -77,6 +77,7 @@ class Views extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -97,6 +98,7 @@ class Views extends ClientAbstract {
 		if ($this->client->getDebug()->lastResponseCode != 200) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return true;
 	}
 
@@ -131,7 +133,7 @@ class Views extends ClientAbstract {
 		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
-		$endPoint = Http::prepare('views/'.$params['id'].'/tickets.json', ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload()));
+		$endPoint = Http::prepare('views/'.$params['id'].'/tickets.json', $this->client->getSideload($params), $params);
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -151,7 +153,7 @@ class Views extends ClientAbstract {
 		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
-		$endPoint = Http::prepare('views/'.(is_array($params['id']) ? 'count_many.json?ids='.implode(',', $params['id']) : $params['id'].'/count.json'), ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload()));
+		$endPoint = Http::prepare('views/'.(is_array($params['id']) ? 'count_many.json?ids='.implode(',', $params['id']) : $params['id'].'/count.json'), $this->client->getSideload($params), $params);
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -171,7 +173,7 @@ class Views extends ClientAbstract {
 		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
-		$endPoint = Http::prepare('views/'.$params['id'].'/export.json', ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload()));
+		$endPoint = Http::prepare('views/'.$params['id'].'/export.json', $this->client->getSideload($params), $params);
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -184,7 +186,7 @@ class Views extends ClientAbstract {
 	 * Preview a view
 	 */
 	public function preview(array $params) {
-		$endPoint = Http::prepare('views/preview.json', ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload()));
+		$endPoint = Http::prepare('views/preview.json', $this->client->getSideload($params), $params);
 		$response = Http::send($this->client, $endPoint, array('view' => $params), 'POST');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -197,7 +199,7 @@ class Views extends ClientAbstract {
 	 * Ticket count for a view preview
 	 */
 	public function previewCount(array $params) {
-		$endPoint = Http::prepare('views/preview/count.json', ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload()));
+		$endPoint = Http::prepare('views/preview/count.json', $this->client->getSideload($params), $params);
 		$response = Http::send($this->client, $endPoint, array('view' => $params), 'POST');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);

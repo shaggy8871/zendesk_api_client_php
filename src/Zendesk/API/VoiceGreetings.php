@@ -14,11 +14,12 @@ class VoiceGreetings extends ClientAbstract {
 	 * List all voice greetings
 	 */
 	public function findAll(array $params = array()) {
-		$endPoint = Http::prepare('channels/voice/greetings.json');
+		$endPoint = Http::prepare('channels/voice/greetings.json', null, $params);
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -38,6 +39,7 @@ class VoiceGreetings extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -46,10 +48,14 @@ class VoiceGreetings extends ClientAbstract {
 	 */
 	public function create(array $params) {
 		$endPoint = Http::prepare('channels/voice/greetings.json');
-		$response = Http::send($this->client, $endPoint, array (self::OBJ_NAME => $params), 'POST');
+		$response = Http::send($this->client, $endPoint, array(self::OBJ_NAME => $params), 'POST');
+        print_r($this->client->getDebug());
+        print_r(json_encode(array(self::OBJ_NAME => $params)));
+        print_r($response);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -67,10 +73,11 @@ class VoiceGreetings extends ClientAbstract {
 		$id = $params['id'];
 		unset($params['id']);
 		$endPoint = Http::prepare('channels/voice/greetings/'.$id.'.json');
-		$response = Http::send($this->client, $endPoint, array (self::OBJ_NAME => $params), 'PUT');
+		$response = Http::send($this->client, $endPoint, array(self::OBJ_NAME => $params), 'PUT');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -91,6 +98,7 @@ class VoiceGreetings extends ClientAbstract {
 		if ($this->client->getDebug()->lastResponseCode != 200) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return true;
 	}
 
@@ -108,6 +116,7 @@ class VoiceGreetings extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 

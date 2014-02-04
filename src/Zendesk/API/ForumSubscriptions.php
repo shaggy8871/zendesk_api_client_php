@@ -18,7 +18,7 @@ class ForumSubscriptions extends ClientAbstract {
 			$params['forum_id'] = $this->client->forums()->getLastId();
 			$this->client->forums()->setLastId(null);
 		}
-		$endPoint = Http::prepare((isset($params['forum_id']) ? 'forum/'.$params['forum_id'].'/subscriptions.json' : 'forum_subscriptions.json'));
+		$endPoint = Http::prepare((isset($params['forum_id']) ? 'forum/'.$params['forum_id'].'/subscriptions.json' : 'forum_subscriptions.json'), null, $params);
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -67,6 +67,7 @@ class ForumSubscriptions extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -86,6 +87,7 @@ class ForumSubscriptions extends ClientAbstract {
 		if ($this->client->getDebug()->lastResponseCode != 200) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return true;
 	}
 

@@ -21,7 +21,7 @@ class Forums extends ClientAbstract {
 	 * List all forums
 	 */
 	public function findAll(array $params = array()) {
-		$endPoint = Http::prepare((isset($params['category_id']) ? 'categories/'.$params['category_id'].'/forums.json' : 'forums.json'));
+		$endPoint = Http::prepare((isset($params['category_id']) ? 'categories/'.$params['category_id'].'/forums.json' : 'forums.json'), null, $params);
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -59,6 +59,7 @@ class Forums extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -80,6 +81,7 @@ class Forums extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -99,6 +101,7 @@ class Forums extends ClientAbstract {
 		if ($this->client->getDebug()->lastResponseCode != 200) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return true;
 	}
 

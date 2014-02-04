@@ -27,8 +27,7 @@ class TopicComments extends ClientAbstract {
 		}
 		$endPoint = Http::prepare(
 				(isset($params['topic_id']) ? 'topics/'.$params['topic_id'].'/comments.json' : 
-				(isset($params['user_id']) ? 'users/'.$params['user_id'].'/topic_comments.json' : '')), 
-               ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload())
+				(isset($params['user_id']) ? 'users/'.$params['user_id'].'/topic_comments.json' : '')), $this->client->getSideload($params), $params
 			);
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
@@ -60,7 +59,7 @@ class TopicComments extends ClientAbstract {
 		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
-		$endPoint = Http::prepare((isset($params['topic_id']) ? 'topics/'.$params['topic_id'].'/comments/'.$params['id'].'.json' : 'users/'.$params['user_id'].'/topic_comments/'.$params['id'].'.json'), ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload()));
+		$endPoint = Http::prepare((isset($params['topic_id']) ? 'topics/'.$params['topic_id'].'/comments/'.$params['id'].'.json' : 'users/'.$params['user_id'].'/topic_comments/'.$params['id'].'.json'), $this->client->getSideload($params));
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -85,6 +84,7 @@ class TopicComments extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -104,6 +104,7 @@ class TopicComments extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -130,6 +131,7 @@ class TopicComments extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -153,6 +155,7 @@ class TopicComments extends ClientAbstract {
 		if ($this->client->getDebug()->lastResponseCode != 200) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return true;
 	}
 

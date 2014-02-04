@@ -20,9 +20,6 @@ class JobStatuses extends ClientAbstract {
 		}
 		$endPoint = Http::prepare('job_statuses/'.$params['id'].'.json');
 		$response = Http::send($this->client, $endPoint);
-        echo __METHOD__;
-        print_r($this->client->getDebug());
-        print_r($response);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}

@@ -14,11 +14,8 @@ class ActivityStream extends ClientAbstract {
 	 * Returns a list of activities
 	 */
 	public function findAll(array $params = array ()) {
-		$endPoint = Http::prepare('activities.json');
+		$endPoint = Http::prepare('activities.json', null, $params);
 		$response = Http::send($this->client, $endPoint);
-        echo __METHOD__;
-        print_r($this->client->getDebug());
-        print_r($response);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}

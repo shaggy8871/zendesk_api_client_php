@@ -172,8 +172,8 @@ class Client {
 	/*
 	 * Sideload getter
 	 */
-	public function getSideload() {
-		return $this->sideload;
+	public function getSideload($params = null) {
+		return ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->sideload);
 	}
 
 	/*

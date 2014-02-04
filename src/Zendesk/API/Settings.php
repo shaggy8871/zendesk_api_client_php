@@ -14,7 +14,7 @@ class Settings extends ClientAbstract {
 	 * Returns a range of settings
 	 */
 	public function findAll(array $params = array ()) {
-		$endPoint = Http::prepare('account/settings.json');
+		$endPoint = Http::prepare('account/settings.json', null, $params);
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -32,6 +32,7 @@ class Settings extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 

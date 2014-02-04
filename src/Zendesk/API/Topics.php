@@ -35,8 +35,7 @@ class Topics extends ClientAbstract {
 		}
 		$endPoint = Http::prepare(
 				(isset($params['forum_id']) ? 'forums/'.$params['forum_id'].'/topics.json' : 
-				(isset($params['user_id']) ? 'users/'.$params['user_id'].'/topics.json' : 'topics.json')), 
-               ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload())
+				(isset($params['user_id']) ? 'users/'.$params['user_id'].'/topics.json' : 'topics.json')), $this->client->getSideload($params), $params
 			);
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
@@ -57,7 +56,7 @@ class Topics extends ClientAbstract {
 		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
-		$endPoint = Http::prepare((is_array($params['id']) ? 'topics/show_many.json?ids='.implode(',', $params['id']) : 'topics/'.$params['id'].'.json'), ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload()));
+		$endPoint = Http::prepare((is_array($params['id']) ? 'topics/show_many.json?ids='.implode(',', $params['id']) : 'topics/'.$params['id'].'.json'), $this->client->getSideload($params));
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -79,6 +78,7 @@ class Topics extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -91,6 +91,7 @@ class Topics extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -112,6 +113,7 @@ class Topics extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -131,6 +133,7 @@ class Topics extends ClientAbstract {
 		if ($this->client->getDebug()->lastResponseCode != 200) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return true;
 	}
 

@@ -18,14 +18,12 @@ class TicketMetrics extends ClientAbstract {
 			$params['ticket_id'] = $this->client->tickets()->getLastId();
 			$this->client->tickets()->setLastId(null);
 		}
-		$endPoint = Http::prepare((isset($params['ticket_id']) ? 'tickets/'.$params['ticket_id'].'/metrics.json' : 'ticket_metrics.json'));
+		$endPoint = Http::prepare((isset($params['ticket_id']) ? 'tickets/'.$params['ticket_id'].'/metrics.json' : 'ticket_metrics.json'), null, $params);
 		$response = Http::send($this->client, $endPoint);
-        echo __METHOD__;
-        print_r($this->client->getDebug());
-        print_r($response);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -49,6 +47,7 @@ class TicketMetrics extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 

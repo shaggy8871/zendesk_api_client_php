@@ -14,11 +14,12 @@ class Twitter extends ClientAbstract {
 	 * Return a list of monitored handles
 	 */
 	public function handles() {
-		$endPoint = 'channels/twitter/monitored_twitter_handles.json';
+		$endPoint = Http::prepare('channels/twitter/monitored_twitter_handles.json', null, $params);
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -33,11 +34,12 @@ class Twitter extends ClientAbstract {
 		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
-		$endPoint = 'channels/twitter/monitored_twitter_handles/'.$params['id'].'.json';
+		$endPoint = Http::prepare('channels/twitter/monitored_twitter_handles/'.$params['id'].'.json');
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 

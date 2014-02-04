@@ -18,9 +18,7 @@ class TopicSubscriptions extends ClientAbstract {
 			$params['topic_id'] = $this->client->topics()->getLastId();
 			$this->client->topics()->setLastId(null);
 		}
-		$endPoint = Http::prepare(
-				(isset($params['topic_id']) ? 'topics/'.$params['topic_id'].'/subscriptions.json' : 'topic_subscriptions.json')
-			);
+		$endPoint = Http::prepare((isset($params['topic_id']) ? 'topics/'.$params['topic_id'].'/subscriptions.json' : 'topic_subscriptions.json'), null, $params);
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -69,6 +67,7 @@ class TopicSubscriptions extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -88,6 +87,7 @@ class TopicSubscriptions extends ClientAbstract {
 		if ($this->client->getDebug()->lastResponseCode != 200) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return true;
 	}
 

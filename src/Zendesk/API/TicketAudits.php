@@ -21,7 +21,7 @@ class TicketAudits extends ClientAbstract {
 		if(!$this->hasKeys($params, array('ticket_id'))) {
 			throw new MissingParametersException(__METHOD__, array('ticket_id'));
 		}
-		$endPoint = Http::prepare('tickets/'.$params['ticket_id'].'/audits.json', ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload()));
+		$endPoint = Http::prepare('tickets/'.$params['ticket_id'].'/audits.json', $this->client->getSideload($params), $params);
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -45,7 +45,7 @@ class TicketAudits extends ClientAbstract {
 		if(!$this->hasKeys($params, array('id', 'ticket_id'))) {
 			throw new MissingParametersException(__METHOD__, array('id', 'ticket_id'));
 		}
-		$endPoint = Http::prepare('tickets/'.$params['ticket_id'].'/audits/'.$params['id'].'.json', ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload()));
+		$endPoint = Http::prepare('tickets/'.$params['ticket_id'].'/audits/'.$params['id'].'.json', $this->client->getSideload($params));
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);

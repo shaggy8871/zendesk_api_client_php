@@ -31,7 +31,7 @@ class Requests extends ClientAbstract {
 				(isset($params['ccd']) ? 'requests/ccd' : 
 				(isset($params['solved']) ? 'requests/solved' : 
 				(isset($params['open']) ? 'requests/open' : 'requests'))))
-			).'.json'.(isset($params['status']) ? '?status='.$params['status'] : ''), ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload()));
+			).'.json'.(isset($params['status']) ? '?status='.$params['status'] : ''), $this->client->getSideload($params), $params);
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -51,7 +51,7 @@ class Requests extends ClientAbstract {
 		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
-		$endPoint = Http::prepare('requests/'.$params['id'].'.json', ((isset($params['sideload'])) && (is_array($params['sideload'])) ? $params['sideload'] : $this->client->getSideload()));
+		$endPoint = Http::prepare('requests/'.$params['id'].'.json', $this->client->getSideload($params));
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -69,6 +69,7 @@ class Requests extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -90,6 +91,7 @@ class Requests extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 

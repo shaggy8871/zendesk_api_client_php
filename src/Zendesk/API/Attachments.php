@@ -22,11 +22,12 @@ class Attachments extends ClientAbstract {
 		if(!file_exists($params['file'])) {
 			throw new CustomException('File '.$params['file'].' could not be found in '.__METHOD__);
 		}
-		$endPoint = 'uploads.json?filename='.$params['file'].(isset($params['optional_token']) ? '&token='.$params['optional_token'] : '');
+		$endPoint = Http::prepare('uploads.json?filename='.$params['file'].(isset($params['optional_token']) ? '&token='.$params['optional_token'] : ''));
 		$response = Http::send($this->client, $endPoint, array('filename' => '@'.$params['file']), 'POST', (isset($params['type']) ? $params['type'] : 'application/binary'));
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -40,11 +41,12 @@ class Attachments extends ClientAbstract {
 		if(!$this->hasAnyKey($params, array('id', 'token'))) {
 			throw new MissingParametersException(__METHOD__, array('id', 'token'));
 		}
-		$endPoint = ($params['token'] ? 'uploads/'.$params['token'] : 'attachments/'.$params['id']).'.json';
+		$endPoint = Http::prepare(($params['token'] ? 'uploads/'.$params['token'] : 'attachments/'.$params['id']).'.json');
 		$response = Http::send($this->client, $endPoint, null, 'DELETE');
 		if ($this->client->getDebug()->lastResponseCode != 200) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return true;
 	}
 
@@ -58,11 +60,12 @@ class Attachments extends ClientAbstract {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
 		$id = $params['id'];
-		$endPoint = 'attachments/'.$id.'.json';
+		$endPoint = Http::prepare('attachments/'.$id.'.json');
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 

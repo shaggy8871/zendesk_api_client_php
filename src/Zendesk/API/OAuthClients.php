@@ -14,7 +14,7 @@ class OAuthClients extends ClientAbstract {
 	 * List all clients
 	 */
 	public function findAll(array $params = array()) {
-		$endPoint = Http::prepare((isset($params['me']) ? 'users/me/oauth/clients.json' : 'oauth/clients.json'));
+		$endPoint = Http::prepare((isset($params['me']) ? 'users/me/oauth/clients.json' : 'oauth/clients.json'), null, $params);
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -67,10 +67,13 @@ class OAuthClients extends ClientAbstract {
 		if(!$this->hasKeys($params, array('id'))) {
 			throw new MissingParametersException(__METHOD__, array('id'));
 		}
-		$endPoint = Http::prepare('oauth/clients/'.$params['id'].'.json');
+        $id = $params['id'];
+        unset($params['id']);
+		$endPoint = Http::prepare('oauth/clients/'.$id.'.json');
 		$response = Http::send($this->client, $endPoint, array(self::OBJ_NAME => $params), 'PUT');
         echo __METHOD__;
         print_r($this->client->getDebug());
+        echo json_encode(array(self::OBJ_NAME => $params));
         print_r($response);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -96,6 +99,7 @@ class OAuthClients extends ClientAbstract {
 		if ($this->client->getDebug()->lastResponseCode != 200) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return true;
 	}
 

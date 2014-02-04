@@ -14,7 +14,7 @@ class SuspendedTickets extends ClientAbstract {
 	 * List all suspended tickets
 	 */
 	public function findAll() {
-		$endPoint = Http::prepare('suspended_tickets.json');
+		$endPoint = Http::prepare('suspended_tickets.json', null, $params);
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -60,6 +60,7 @@ class SuspendedTickets extends ClientAbstract {
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return $response;
 	}
 
@@ -80,6 +81,7 @@ class SuspendedTickets extends ClientAbstract {
 		if ($this->client->getDebug()->lastResponseCode != 200) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return true;
 	}
 

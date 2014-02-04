@@ -14,7 +14,7 @@ class AuditLogs extends ClientAbstract {
 	 * List all audit logs
 	 */
 	public function findAll(array $params = array()) {
-		$endPoint = Http::prepare('audit_logs.json');
+		$endPoint = Http::prepare('audit_logs.json', null, $params);
 		$response = Http::send($this->client, $endPoint, $params, 'GET');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);

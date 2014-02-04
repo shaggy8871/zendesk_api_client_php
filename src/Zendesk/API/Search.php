@@ -14,7 +14,7 @@ class Search extends ClientAbstract {
 		if(!$this->hasKeys($params, array('query'))) {
 			throw new MissingParametersException(__METHOD__, array('query'));
 		}
-		$endPoint = Http::prepare('search.json');
+		$endPoint = Http::prepare('search.json', null, $params);
 		$response = Http::send($this->client, $endPoint, $params, 'GET');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -30,7 +30,7 @@ class Search extends ClientAbstract {
 		if(!$this->hasKeys($params, array('query'))) {
 			throw new MissingParametersException(__METHOD__, array('query'));
 		}
-		$endPoint = Http::prepare('portal/search.json');
+		$endPoint = Http::prepare('portal/search.json', null, $params);
 		$response = Http::send($this->client, $endPoint, $params, 'GET');
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);

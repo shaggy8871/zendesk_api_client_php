@@ -14,7 +14,7 @@ class Automations extends ClientAbstract {
 	 * List all automations
 	 */
 	public function findAll(array $params = array()) {
-		$endPoint = Http::prepare((isset($params['active']) ? 'automations/active.json' : 'automations.json'));
+		$endPoint = Http::prepare((isset($params['active']) ? 'automations/active.json' : 'automations.json'), null, $params);
 		$response = Http::send($this->client, $endPoint);
 		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
 			throw new ResponseException(__METHOD__);
@@ -93,6 +93,7 @@ class Automations extends ClientAbstract {
 		if ($this->client->getDebug()->lastResponseCode != 200) {
 			throw new ResponseException(__METHOD__);
 		}
+		$this->client->setSideload(null);
 		return true;
 	}
 
