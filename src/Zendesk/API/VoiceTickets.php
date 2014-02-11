@@ -7,17 +7,17 @@ namespace Zendesk\API;
  */
 class VoiceTickets extends ClientAbstract {
 
-	/*
-	 * Create a voice or voicemail ticket
-	 */
-	public function create(array $params) {
-		$endPoint = Http::prepare('channels/voice/tickets.json');
-		$response = Http::send($this->client, $endPoint, $params, 'POST'); // note: specify the whole package
-		if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
-			throw new ResponseException(__METHOD__);
-		}
-		$this->client->setSideload(null);
-		return $response;
-	}
+    /*
+     * Create a voice or voicemail ticket
+     */
+    public function create(array $params) {
+        $endPoint = Http::prepare('channels/voice/tickets.json');
+        $response = Http::send($this->client, $endPoint, $params, 'POST'); // note: specify the whole package
+        if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
+            throw new ResponseException(__METHOD__);
+        }
+        $this->client->setSideload(null);
+        return $response;
+    }
 
 }

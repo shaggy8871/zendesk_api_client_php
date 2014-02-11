@@ -7,8 +7,8 @@ namespace Zendesk\API;
  */
 class Debug {
 
-	public $lastRequestHeaders;
-	public $lastResponseCode;
-	public $lastResponseHeaders;
+    public $lastRequestHeaders;
+    public $lastResponseCode;
+    public $lastResponseHeaders;
 
 }
