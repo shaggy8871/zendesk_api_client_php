@@ -103,12 +103,12 @@ class OrganizationFields extends ClientAbstract {
      * Reorder organization fields
      */
     public function reorder(array $params) {
-        if(!$this->hasKeys($params, array('user_fields_ids'))) {
-            throw new MissingParametersException(__METHOD__, array('user_fields_ids'));
+        if(!$this->hasKeys($params, array('organization_field_ids'))) {
+            throw new MissingParametersException(__METHOD__, array('organization_field_ids'));
         }
         $endPoint = Http::prepare('organization_fields/reorder.json');
-        $response = Http::send($this->client, $endPoint, array('user_fields_ids' => $params['user_fields_ids']), 'PUT');
-        if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 200)) {
+        $response = Http::send($this->client, $endPoint, array('organization_field_ids' => $params['organization_field_ids']), 'PUT');
+        if ($this->client->getDebug()->lastResponseCode != 200) {
             throw new ResponseException(__METHOD__);
         }
         $this->client->setSideload(null);

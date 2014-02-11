@@ -116,7 +116,7 @@ class OrganizationFieldsTest extends \PHPUnit_Framework_TestCase {
      * @depends testAuthToken
      */
     public function testReorder() {
-        $result = $this->client->organizationFields()->reorder(array('user_fields_ids' => array(14382, 14342)));
+        $result = $this->client->organizationFields()->reorder(array('organization_field_ids' => array(14382, 14342)));
         $this->assertEquals($this->client->getDebug()->lastResponseCode, '200', 'Does not return HTTP code 200');
     }
 
