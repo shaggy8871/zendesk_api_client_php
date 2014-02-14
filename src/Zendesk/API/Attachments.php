@@ -24,7 +24,7 @@ class Attachments extends ClientAbstract {
             throw new MissingParametersException(__METHOD__, array('postname'));
         }
         if(!file_exists($params['filename'])) {
-            throw new CustomException('File '.$params['file'].' could not be found in '.__METHOD__);
+            throw new CustomException('File '.$params['filename'].' could not be found in '.__METHOD__);
         }
 
         $endPoint = Http::prepare('uploads.json?filename=' . urlencode($params['postname']) . (isset($params['optional_token']) ? '&token='.$params['optional_token'] : ''));
