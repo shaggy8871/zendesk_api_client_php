@@ -35,23 +35,23 @@ class Http {
     /*
      * Use the send method to call every endpoint except for oauth/tokens
      */
-    public static function send($client, $endPoint, $json = null, $method = 'GET', $contentType = 'application/json') {
+    public static function send($client, $endPoint, $data = null, $method = 'GET', $contentType = 'application/json') {
 
         $url = $client->getApiUrl().$endPoint;
         $method = strtoupper($method);
-        $json = ($json == null ? (object) null : (($method != 'GET') && ($method != 'DELETE') && ($contentType == 'application/json') ? json_encode($json) : $json));
+        $data = ($data == null ? (object) null : (($method != 'GET') && ($method != 'DELETE') && ($contentType == 'application/json') ? json_encode($data) : $data));
 
         if($method == 'POST') {
             $curl = curl_init($url);
             curl_setopt($curl, CURLOPT_POST, true);
-            curl_setopt($curl, CURLOPT_POSTFIELDS, $json);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
         } else
         if($method == 'PUT') {
             $curl = curl_init($url);
             curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PUT');
-            curl_setopt($curl, CURLOPT_POSTFIELDS, $json);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
         } else {
-            $curl = curl_init($url.($json != (object) null ? '?'.http_build_query($json) : ''));
+            $curl = curl_init($url.($data != (object) null ? '?'.http_build_query($data) : ''));
             curl_setopt($curl, CURLOPT_CUSTOMREQUEST, ($method ? $method : 'GET'));
         }
         if($client->getAuthType() == 'oauth_token') {

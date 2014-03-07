@@ -10,20 +10,25 @@ class Attachments extends ClientAbstract {
     /*
      * Upload an attachment
      * $params must include:
-     *    'file' - an attribute with the absolute local file path on the server
-     *    'type' - the MIME type of the file
+     *    'filename' - an attribute with the absolute local file path on the server
+     *    'postname' - the name of posted file
      * Optional:
      *    'optional_token' - an existing token
      */
-    public function upload(array $params) {
-        if(!$this->hasKeys($params, array('file'))) {
-            throw new MissingParametersException(__METHOD__, array('file'));
+    public function upload(array $params)
+    {
+        if(!$this->hasKeys($params, array('filename'))) {
+            throw new MissingParametersException(__METHOD__, array('filename'));
         }
-        if(!file_exists($params['file'])) {
-            throw new CustomException('File '.$params['file'].' could not be found in '.__METHOD__);
+        if(!$this->hasKeys($params, array('postname'))) {
+            throw new MissingParametersException(__METHOD__, array('postname'));
         }
-        $endPoint = Http::prepare('uploads.json?filename='.$params['file'].(isset($params['optional_token']) ? '&token='.$params['optional_token'] : ''));
-        $response = Http::send($this->client, $endPoint, array('filename' => '@'.$params['file']), 'POST', (isset($params['type']) ? $params['type'] : 'application/binary'));
+        if(!file_exists($params['filename'])) {
+            throw new CustomException('File '.$params['filename'].' could not be found in '.__METHOD__);
+        }
+
+        $endPoint = Http::prepare('uploads.json?filename=' . urlencode($params['postname']) . (isset($params['optional_token']) ? '&token='.$params['optional_token'] : ''));
+        $response = Http::send($this->client, $endPoint, file_get_contents($params['filename']), 'POST', 'application/binary');
         if ((!is_object($response)) || ($this->client->getDebug()->lastResponseCode != 201)) {
             throw new ResponseException(__METHOD__);
         }
